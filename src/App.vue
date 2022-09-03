@@ -1,8 +1,18 @@
 <template>
   <div class="container">
     <global-true-header :user="currentUser"></global-true-header>
-    <home></home>
-    <login></login>
+    <router-view></router-view>
+    <footer class="text-center py-4 text-secondary bg-light mt-6">
+      <small>
+        <ul class="list-unstyled list-inline">
+          <li class="list-inline-item">2022 知乎专栏</li>
+          <li class="list-inline-item">课程</li>
+          <li class="list-inline-item">文档</li>
+          <li class="list-inline-item">联系</li>
+          <li class="list-inline-item">更多</li>
+        </ul>
+      </small>
+    </footer>
   </div>
 </template>
 
@@ -21,9 +31,7 @@ const currentUser: UserProps = {
 export default defineComponent({
   name: 'App',
   components: {
-    GlobalTrueHeader,
-    Home,
-    Login
+    GlobalTrueHeader
   },
   setup() {
     return {
