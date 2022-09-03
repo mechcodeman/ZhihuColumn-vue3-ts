@@ -25,6 +25,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router' // 定义路由的一系列行为
 import ValidateInput, { RulesProp } from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
 
@@ -36,6 +37,7 @@ export default defineComponent({
   },
   setup() {
     const emailVal = ref('')
+    const router = useRouter()
     const emailRules: RulesProp = [
       { type: 'required', message: '电子邮箱地址不能为空' },
       { type: 'email', message: '请输入正确的电子邮箱格式' }
@@ -46,6 +48,9 @@ export default defineComponent({
     ]
     const onFormSubmit = (result: boolean) => {
       console.log('result', result)
+      if (result) {
+        router.push({ name: 'column', params: { id: 1 } }) // router-link内部和router对象分享的是同一段代码
+      }
     }
     return {
       emailRules,
