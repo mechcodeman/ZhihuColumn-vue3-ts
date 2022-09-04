@@ -6,6 +6,7 @@
           <img :src="column.avatar" class="rounded-circle border border-light w-25 my-3" :alt="column.title">
           <h5 class="card-title">{{column.title}}</h5>
           <p class="card-text text-left">{{column.description}}</p>
+          <!-- 在to前面加上: 表示动态路由，通过模板字符串或者传入对象的形式来指定动态路径 -->
           <router-link :to="`/column/${column.id}`" class="btn btn-outline-primary">进入专栏</router-link>
         </div>
       </div>
