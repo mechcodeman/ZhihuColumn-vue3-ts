@@ -1009,9 +1009,9 @@ onMounted(() => {
 })
 ```
 
+# 第六章 请你吃全家桶 - 初步使用 vue-router 和 vuex
 
-
-# 6-1 什么是 SPA 应用？
+## 6-1 什么是 SPA 应用？
 
 **HTML5 History API： https://developer.mozilla.org/zh-CN/docs/Web/API/History_API**
 
@@ -1046,13 +1046,13 @@ document.getElementById("home").addEventListener("click", e => {
 });
 ```
 
-## SPA 的优点
+### SPA 的优点
 
 - 速度快，第一次下载完成静态文件，跳转不需要再次下载静态文件
 - 体验好，整个交互趋于无缝，更倾向于原生应用
 - 为前后端分离提供了实践场所
 
-# 6-2 Vue Router 的安装和使用
+## 6-2 Vue Router 的安装和使用
 
 安装新版的 vue router
 
@@ -1064,7 +1064,7 @@ npm install vue-router@next
 
 vue-router-next的项目地址： https://github.com/vuejs/vue-router-next
 
-# 6-3 vue-router 添加路由
+## 6-3 vue-router 添加路由
 
 ```javascript
 import { createRouter, createWebHistory } from 'vue-router'
@@ -1089,7 +1089,7 @@ const router = createRouter({
 })
 ```
 
-# 6-4 使用 vue-router 获取参数和跳转路由
+## 6-4 使用 vue-router 获取参数和跳转路由
 
 Node.js URL 结构表地址：https://nodejs.org/api/url.html#url_url_strings_and_url_objects
 
@@ -1133,6 +1133,67 @@ router.push('/login')
 // router.push 方法跳转到另外一个 url，它接受的参数和 router-link 的 to 里面的参数是完全一致的，其实router link 内部和这个 router 分享的是一段代码，可谓是殊途同归了。
 ```
 
-# 6-5关于添加的页面和路由视图的说明
+## 6-5关于添加的页面和路由视图的说明
 
 ![image-20220905164653175](C:\Users\Chenpengyu\AppData\Roaming\Typora\typora-user-images\image-20220905164653175.png)
+
+## 6-6 什么是状态管理工具
+
+### 直接使用全局对象的问题
+
+- 第一，全局对象里面的数据是普通的 javascript 数据类型，他们不是响应式的，也就说第一次读取渲染有可能没有问题，但是当数据修改以后，界面没法作出对应的更新，这是一个很大的问题。
+- 第二，全局对象的修改无法追踪，也就是说在应用中的任何一处代码，都可以有机会拿到全局数据，并作出对应的修改，但是我们根本没有办法搞清楚是哪行代码 哪个文件修改了全局数据，这样就非常容易产生 bug 而且难以追踪。这就很危险了。
+- 第三，vue 是组件化的世界，就像我们的程序大家也可以发现，组件的构成就像一棵树一样，全局数据一般是从父组件一层层的传递给子组件的。直接从一个组件获取数据被视为一种反模式，这样很容易造成数据的混乱。
+
+### 状态管理三杰
+
+- Vuex ：https://vuex.vuejs.org/zh/guide/
+- Redux ：https://redux.js.org/
+- Mobx ：https://mobx.js.org/README.html
+
+### 设计理念
+
+- 一个类似 object 的全局数据结构 - 称之为 store
+- 只能调用特定的方法完成数据的修改
+
+## 6-7 Vuex 简介和安装
+
+**每一个 Vuex 应用的核心就是 store（仓库）。“store”基本上就是一个容器，它包含着你的应用中大部分的状态 (state)。** Vuex 和单纯的全局对象有以下两点不同：
+
+- Vuex 的状态存储是响应式的。当 Vue 组件从 store 中读取状态的时候，若 store 中的状态发生变化，那么相应的组件也会相应地得到高效更新。
+- 你不能直接改变 store 中的状态。改变 store 中的状态的唯一途径就是显式地提交 (commit) mutation。这样使得我们可以方便地跟踪每一个状态的变化，从而让我们能够实现一些工具帮助我们更好地了解我们的应用。
+
+### 新版 Vuex 安装
+
+```bash
+npm install vuex@next --save
+
+// 保证安装完毕的版本是 4.0.0 以上的
+```
+
+### 测试 Vuex store
+
+```typescript
+import { createStore } from 'vuex'
+// 从 vuex 导入 createStore 这个函数，我们发现 vue3 以后，这些第三方的官方库，名字出奇的相似，vue-router 也是以create 开头的，看起来非常的清楚。
+const store = createStore({
+  state: {
+    count: 0
+  },  
+})
+// createStore 接受一个对象作为参数，这些对象中包含了 vuex 的核型概念，第一个概念称之为 state，这里面包含的是我们想放入的在全局共享的数据，这里我们放入一个简单的 count。
+
+// 现在我们已经可以直接访问这个值了，我们可以直接使用 store.state.count 来访问它。
+
+console.log('store', store.state.count)
+// 接下来我们来更改状态，更改 Vuex 的 store 中的状态的唯一方法是提交 mutation。Vuex 中的 mutation 非常类似于事件：每个 mutation 都有一个字符串的 事件类型 (type) 和 一个 回调函数 (handler)。这个回调函数就是我们实际进行状态更改的地方，并且它会接受 state 作为第一个参数：
+  mutations: {
+    add (state) {
+      state.count++
+    }
+  }
+  
+// 有了 mutations 以后，让我们来触发它，要唤醒一个 mutation handler，你需要以相应的 type 调用 store.commit 方法：
+store.commit('add')
+console.log('count', store.state.count)
+```
