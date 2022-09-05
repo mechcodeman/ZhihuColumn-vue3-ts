@@ -1008,3 +1008,131 @@ onMounted(() => {
   emitter.emit('form-item-created', validateInput)
 })
 ```
+
+
+
+# 6-1 什么是 SPA 应用？
+
+**HTML5 History API： https://developer.mozilla.org/zh-CN/docs/Web/API/History_API**
+
+这个 API 帮助我们可以在不刷新页面的前提下动态改变浏览器地址栏中的URL地址，动态修改页面上所显示资源。
+
+** history.pushState(state, title, url) 方法 ：添加一条历史记录，不刷新页面参数 **
+
+- state : 一个于指定网址相关的状态对象，popstate事件触发时，该对象会传入回调函数中。如果不需要这个对象，此处可以填null。
+- title : 新页面的标题，但是所有浏览器目前都忽略这个值，因此这里可以填null。
+- url : 新的网址，必须与前页面处在同一个域。浏览器的地址栏将显示这个网址。
+
+使用 history API 做的小例子地址： https://codesandbox.io/s/gallant-newton-kl9hj?file=/src/index.js
+
+```javascript
+const handleChange = (url, content) => {
+  // go to url
+  window.history.pushState(null, "hello there", url);
+
+  // new data
+  document.getElementById("app").innerHTML = `
+    <h1>${content}</h1>
+  `;
+};
+document.getElementById("change").addEventListener("click", e => {
+  e.preventDefault();
+  handleChange("create.html", "create");
+});
+
+document.getElementById("home").addEventListener("click", e => {
+  e.preventDefault();
+  handleChange("/", "home");
+});
+```
+
+## SPA 的优点
+
+- 速度快，第一次下载完成静态文件，跳转不需要再次下载静态文件
+- 体验好，整个交互趋于无缝，更倾向于原生应用
+- 为前后端分离提供了实践场所
+
+# 6-2 Vue Router 的安装和使用
+
+安装新版的 vue router
+
+```bash
+npm install vue-router@next
+
+// 保证安装完毕的版本是 4.0.0 以上的
+```
+
+vue-router-next的项目地址： https://github.com/vuejs/vue-router-next
+
+# 6-3 vue-router 添加路由
+
+```javascript
+import { createRouter, createWebHistory } from 'vue-router'
+import Home from './views/Home.vue'
+import Login from './views/Login.vue'
+
+const routerHistory = createWebHistory()
+const router = createRouter({
+  history: routerHistory,
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: Home
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login
+    }
+  ]
+})
+```
+
+# 6-4 使用 vue-router 获取参数和跳转路由
+
+Node.js URL 结构表地址：https://nodejs.org/api/url.html#url_url_strings_and_url_objects
+
+```javascript
+import { useRoute } from 'vue-router'
+// 它是一个函数，调用后可以返回对应的对象。
+const route = useRoute() 
+// 我们返回出去，在页面中把它全部显示出来看看
+return {
+ route
+}
+// 对于一个object，如果我们想再页面显示它的全部内容，除了在 js 中使用 console，也可以使用 pre 标签包裹这个变量。
+// pre 标签可定义预格式化的文本。在pre元素中的文本会保留空格和换行符。文本显现为等宽字体
+<pre>{{route}}</pre>
+
+// 替换 URL 为比较丰富的地址
+http://localhost:8080/column?abc=foo#123
+```
+
+**router-link 组件跳转的方式**
+
+我们第一种方法可以将 to 改成不是字符串类型，而是 object 类型，这个object 应该有你要前往route 的 name ，还有对应的 params。
+
+```javascript
+ :to="{ name: 'column', params: { id: column.id }}"
+```
+
+第二种格式，我们可以在里面传递一个模版字符串，这里面把 column.id 填充进去就好。
+
+```javascript
+ :to="`/column/${column.id}`"
+```
+
+**使用 useRouter 钩子函数进行跳转**
+
+```javascript
+const router = useRouter()
+// 特别注意这个是 useRouter 而不是 useRoute，差一个字母，作用千差万别，那个是获得路由信息，这个是定义路由的一系列行为。在这里，我们可以掉用
+router.push('/login') 
+
+// router.push 方法跳转到另外一个 url，它接受的参数和 router-link 的 to 里面的参数是完全一致的，其实router link 内部和这个 router 分享的是一段代码，可谓是殊途同归了。
+```
+
+# 6-5关于添加的页面和路由视图的说明
+
+![image-20220905164653175](C:\Users\Chenpengyu\AppData\Roaming\Typora\typora-user-images\image-20220905164653175.png)

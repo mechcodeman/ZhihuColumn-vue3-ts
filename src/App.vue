@@ -1,6 +1,8 @@
 <template>
   <div class="container">
+    <!-- 在所有页面顶部渲染顶栏 -->
     <global-true-header :user="currentUser"></global-true-header>
+    <!-- 通过main.ts配置关联了Home、ColumnDetail、Login三个路由 -->
     <router-view></router-view>
     <footer class="text-center py-4 text-secondary bg-light mt-6">
       <small>
@@ -21,10 +23,10 @@ import { defineComponent } from 'vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 import GlobalTrueHeader, { UserProps } from './components/GlobalTrueHeader.vue'
-import Home from './views/Home.vue'
-import Login from './views/Login.vue'
+// import Home from './views/Home.vue'
+// import Login from './views/Login.vue'
 const currentUser: UserProps = {
-  isLogin: false,
+  isLogin: false, // true为已登录渲染DropDown，false为未登录渲染Login
   name: '低调的viking'
 }
 
@@ -35,8 +37,7 @@ export default defineComponent({
   },
   setup() {
     return {
-      currentUser,
-      Home
+      currentUser
     }
   }
 })

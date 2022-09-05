@@ -6,8 +6,9 @@
           <img :src="column.avatar" class="rounded-circle border border-light w-25 my-3" :alt="column.title">
           <h5 class="card-title">{{column.title}}</h5>
           <p class="card-text text-left">{{column.description}}</p>
-          <!-- 在to前面加上: 表示动态路由，通过模板字符串或者传入对象的形式来指定动态路径 -->
+          <!-- 通过动态路由来指定子组件ColumnList的实例对象被点击时跳转到对应的作者专栏中 -->
           <router-link :to="`/column/${column.id}`" class="btn btn-outline-primary">进入专栏</router-link>
+          <!-- 在to前面加上: 表示动态路由，通过模板字符串或者传入对象的形式来指定动态路径 -->
         </div>
       </div>
     </div>
@@ -32,7 +33,7 @@ export default defineComponent({
   },
   setup(props) {
     const columnList = computed(() => {
-      return props.list.map(column => {
+      return props.list.map(column => { // 根据动态路由来查找测试数据中对应的专栏作者信息并返回到子组件实例对象上进行渲染
         if (!column.avatar) {
           column.avatar = require('@/assets/column.jpg')
         }

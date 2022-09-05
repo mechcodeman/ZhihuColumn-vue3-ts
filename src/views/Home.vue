@@ -1,5 +1,6 @@
 <template>
   <div class="home-page">
+    <!-- 渲染Home作为主页所需要的内容格式 -->
     <section class="py-5 text-center container">
       <div class="row py-lg-5">
         <div class="col-lg-6 col-md-8 mx-auto">
@@ -12,6 +13,7 @@
       </div>
     </section>
     <h4 class="font-weight-bold text-center">发现精彩</h4>
+    <!-- 通过子组件渲染所有作者的专栏，其中信息list由testData.ts导入 -->
     <column-list :list="list"></column-list>
   </div>
 </template>
