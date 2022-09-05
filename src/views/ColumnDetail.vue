@@ -16,19 +16,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
 import { useRoute } from 'vue-router' // 获取路由信息
-import { testData, testPosts } from '../testData'
+import { useStore } from 'vuex'
+import { GlobalDataProps } from '../store'
 import PostList from '../components/PostList.vue'
 export default defineComponent({
   components: {
     PostList
   },
   setup() {
+    const store = useStore<GlobalDataProps>()
     const route = useRoute()
     const currentId = +route.params.id // +可以便捷地将string格式的id转换为number格式
-    const column = testData.find(c => c.id === currentId)
-    const list = testPosts.filter(post => post.id === currentId)
+    const column = computed(() => store.state.columns.find(c => c.id === currentId))
+    const list = computed(() => store.state.posts.filter(post => post.id === currentId))
     return {
       column,
       list

@@ -19,23 +19,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
+import { useStore } from 'vuex'
 import 'bootstrap/dist/css/bootstrap.min.css'
-
 import GlobalTrueHeader, { UserProps } from './components/GlobalTrueHeader.vue'
-// import Home from './views/Home.vue'
-// import Login from './views/Login.vue'
-const currentUser: UserProps = {
-  isLogin: false, // true为已登录渲染DropDown，false为未登录渲染Login
-  name: '低调的viking'
-}
-
 export default defineComponent({
   name: 'App',
   components: {
     GlobalTrueHeader
   },
   setup() {
+    const store = useStore()
+    const currentUser = computed(() => store.state.user)
     return {
       currentUser
     }

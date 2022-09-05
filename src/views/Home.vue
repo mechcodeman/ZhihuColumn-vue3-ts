@@ -19,8 +19,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { testData } from '../testData'
+import { defineComponent, computed } from 'vue'
+import { useStore } from 'vuex'
+import { GlobalDataProps } from '../store' // 在store.ts中定义的全局类型可以直接拿出来，也可以当作泛型传到useStore中，获得更好的自动补全
 import ColumnList from '../components/ColumnList.vue'
 export default defineComponent({
   name: 'Home',
@@ -28,8 +29,10 @@ export default defineComponent({
     ColumnList
   },
   setup() {
+    const store = useStore<GlobalDataProps>()
+    const list = computed(() => store.state.columns) // 利用computed属性方便地监听目标对象
     return {
-      list: testData
+      list
     }
   }
 })
