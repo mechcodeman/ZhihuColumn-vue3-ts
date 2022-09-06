@@ -16,7 +16,7 @@ const store = createStore<GlobalDataProps>({
   state: {
     columns: testData, // testData.ts中导出的数据模块，下同
     posts: testPosts,
-    user: { isLogin: false, name: '低调的viking', columnId: 1 }
+    user: { isLogin: true, name: '低调的viking', columnId: 1 }
   },
   mutations: {
     login(state) { // 使用mutations修改数据，实现点击页面上的登录时能够发生数据的变化并且触发页面的变化

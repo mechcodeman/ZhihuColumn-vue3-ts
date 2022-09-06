@@ -1329,3 +1329,53 @@ const list = computed(() => store.getters.getPostsByCid(currentId))
 ![image-20220906152045970](C:\Users\Chenpengyu\AppData\Roaming\Typora\typora-user-images\image-20220906152045970.png)
 
 post使用columnId来表明自身属于哪个column，因此新建post需要columnId，每个专栏都有一个对应的作者author，与用户登录信息是同一个数据结构，所以新建文章时可以从当前登录用户的信息中拿到columnId，然后创建文章
+
+## 6-11 添加导航守卫
+
+vue-router 导航守卫文档 ：https://router.vuejs.org/zh/guide/advanced/navigation-guards.html
+
+```typescript
+router.beforeEach((to, from, next) => {
+  if (to.name !== 'login' && !store.state.user.isLogin) {
+    next({ name: 'login' })
+  } else {
+    next()
+  }
+})
+```
+
+## 6-12 添加元信息完成权限管理
+
+vue-router 元信息文档 ：https://router.vuejs.org/zh/guide/advanced/meta.html
+
+**添加元信息**
+
+```typescript
+    {
+      path: '/login',
+      name: 'login',
+      component: Login,
+      meta: { redirectAlreadyLogin: true }
+    },
+    {
+      path: '/create',
+      name: 'create',
+      component: CreatePost,
+      meta: { requiredLogin: true }
+    },
+```
+
+**更新路由守卫**
+
+```typescript
+router.beforeEach((to, from, next) => {
+  console.log(to.meta)
+  if (to.meta.requiredLogin && !store.state.user.isLogin) {
+    next({ name: 'login' })
+  } else if (to.meta.redirectAlreadyLogin && store.state.user.isLogin) {
+    next('/')
+  } else {
+    next()
+  }
+})
+```

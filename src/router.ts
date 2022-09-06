@@ -16,7 +16,8 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
+      meta: { redirectAlreadyLogin: true }
     },
     {
       path: '/column/:id',
@@ -26,13 +27,16 @@ const router = createRouter({
     {
       path: '/create',
       name: 'create',
-      component: CreatePost
+      component: CreatePost,
+      meta: { requiredLogin: true } // 添加元信息
     }
   ]
 })
 router.beforeEach((to, from, next) => {
-  if (to.name !== 'login' && !store.state.user.isLogin) { // 如果用户未登录且去往非登录界面，则重定向到登录界面，否则继续
+  if (to.meta.requiredLogin && !store.state.user.isLogin) { // 通过元信息来判断该路由是否需要受路由守卫的监管
     next({ name: 'login' })
+  } else if (to.meta.redirectAlreadyLogin && store.state.user.isLogin) { // 通过meta字段对login路由添加判断——若用户已登录时进入login路由则跳转到home主界面
+    next('/')
   } else {
     next()
   }
