@@ -1,6 +1,7 @@
 <template>
   <div class="home-page">
     <!-- 渲染Home作为主页所需要的内容格式 -->
+    <h1>{{biggerColumnsLen}}</h1>
     <section class="py-5 text-center container">
       <div class="row py-lg-5">
         <div class="col-lg-6 col-md-8 mx-auto">
@@ -31,8 +32,10 @@ export default defineComponent({
   setup() {
     const store = useStore<GlobalDataProps>()
     const list = computed(() => store.state.columns) // 利用computed属性方便地监听目标对象
+    const biggerColumnsLen = computed(() => store.getters.biggerColumnsLen)
     return {
-      list
+      list,
+      biggerColumnsLen
     }
   }
 })

@@ -20,6 +20,28 @@ const store = createStore<GlobalDataProps>({
     login(state) { // 使用mutations修改数据，实现点击页面上的登录时能够发生数据的变化并且触发页面的变化
       state.user = { ...state.user, isLogin: true, name: '低调的viking' }
     }
+  },
+  getters: { // 同计算属性一样，getter可以根据他的依赖值缓存起来，当依赖值发生改变时才会重新计算
+    biggerColumnsLen(state) {
+      return state.columns.filter(c => c.id > 2).length
+    },
+    getColumnById: (state) => (id: number) => {
+      return state.columns.find(c => c.id === id)
+    },
+    // 这个 getter 的特殊之处在于要传参数进去, 对于这种 getter 我们需要返回一个对应的函数，其实就是假如有参数就要返回一个函数。然后调用的时候可以传入参数。对比以下两个程序段以理解
+    /*
+      // 不需要参数，直接返回结果
+        getColumns: (state) => {
+            return state.columns.data
+        },
+      // 需要参数，前面和上面是一样的，可以拿到 state
+        getColumnById: (state) => (id: string) => {
+            return ...
+        },
+    */
+    getPostsByCid: (state) => (cid: number) => {
+      return state.posts.filter(post => post.columnId === cid)
+    }
   }
 })
 

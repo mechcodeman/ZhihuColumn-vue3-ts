@@ -29,8 +29,8 @@ export default defineComponent({
     const store = useStore<GlobalDataProps>()
     const route = useRoute()
     const currentId = +route.params.id // +可以便捷地将string格式的id转换为number格式
-    const column = computed(() => store.state.columns.find(c => c.id === currentId))
-    const list = computed(() => store.state.posts.filter(post => post.id === currentId))
+    const column = computed(() => store.getters.getColumnById(currentId))
+    const list = computed(() => store.getters.getPostsByCid(currentId))
     return {
       column,
       list
