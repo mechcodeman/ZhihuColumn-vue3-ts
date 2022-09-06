@@ -1,6 +1,7 @@
 <template>
   <div class="validate-input-container pb-3">
     <input
+    v-if="tag !== 'textarea'"
       class="form-control"
       :class="{'is-invalid': inputRef.error}"
       :value="inputRef.val"
@@ -8,6 +9,16 @@
       @input="updateValue"
       v-bind="$attrs"
     >
+    <textarea
+      v-else
+      class="form-control"
+      :class="{'is-invalid': inputRef.error}"
+      :value="inputRef.val"
+      @blur="validateInput"
+      @input="updateValue"
+      v-bind="$attrs"
+    >
+    </textarea>
     <span v-if="inputRef.error" class="invalid-feedback">{{inputRef.message}}</span>
   </div>
 </template>
@@ -22,10 +33,15 @@ interface RuleProp {
   message: string;
 }
 export type RulesProp = RuleProp[]
+export type TagType = 'input' | 'textarea' // 创建一个新的类型用于支持input和textarea两种输入框
 export default defineComponent({
   props: {
     rules: Array as PropType<RulesProp>,
-    modeValue: String
+    modeValue: String,
+    tag: {
+      type: String as PropType<TagType>,
+      default: 'input' // 默认为input输入框
+    }
   },
   inheritAttrs: false,
   setup(props, context) {

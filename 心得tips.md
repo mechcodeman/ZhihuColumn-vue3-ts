@@ -1128,11 +1128,64 @@ http://localhost:8080/column?abc=foo#123
 
 ```javascript
 const router = useRouter()
-// 特别注意这个是 useRouter 而不是 useRoute，差一个字母，作用千差万别，那个是获得路由信息，这个是定义路由的一系列行为。在这里，我们可以掉用
+// 特别注意这个是 useRouter 而不是 useRoute，差一个字母，作用千差万别，那个是获得路由信息，这个是定义路由的一系列行为。在这里，我们可以调用
 router.push('/login') 
 
 // router.push 方法跳转到另外一个 url，它接受的参数和 router-link 的 to 里面的参数是完全一致的，其实router link 内部和这个 router 分享的是一段代码，可谓是殊途同归了。
 ```
+
+### 关于router.push的说明
+
+在Vue2.0路由跳转中，除了使用 <router-link> 创建 a 标签来定义导航链接，我们还可以借助 router 实例方法，通过编写代码来实现。
+
+```vue
+router.push(location)
+```
+
+想要导航到不同的 URL，使用 router.push 方法。这个方法会向 history 栈添加一个新记录，所以，当用户点击浏览器后退按钮时，可以返回到之前的 URL。
+
+当你点击 <router-link> 时， router.push 方法会在内部调用，所以说，点击<router-link :to="..."> 等同于调用 router.push(...)。
+
+```vue
+声明式：<router-link :to="...">
+编程式：router.push(...)
+```
+
+```vue
+<!-- router.push(...)方法 -->
+// 字符串
+router.push('apple')
+// 对象
+router.push({path:'apple'})
+// 命名路由
+router.push({name: 'applename'})
+//直接路由带查询参数query，地址栏变成 /apple?color=red
+router.push({path: 'apple', query: {color: 'red' }})
+//命名路由带查询参数query，地址栏变成/apple?color=red
+router.push({name: 'applename', query: {color: 'red' }})
+//直接路由带路由参数params，params 不生效，如果提供了 path，params 会被忽略
+router.push({path:'applename', params:{ color: 'red' }})
+// 命名路由带路由参数params，地址栏是/apple/red
+router.push({name:'applename', params:{ color: 'red' }})
+
+<!-- router-link :to="..."方法 -->
+// 字符串
+<router-link to="apple"> to apple</router-link>
+// 对象
+<router-link :to="{path:'apple'}"> to apple</router-link>
+// 命名路由
+<router-link :to="{name: 'applename'}"> to apple</router-link>
+//直接路由带查询参数query，地址栏变成 /apple?color=red
+<router-link :to="{path: 'apple', query: {color: 'red' }}"> to apple</router-link>
+// 命名路由带查询参数query，地址栏变成/apple?color=red
+<router-link :to="{name: 'applename', query: {color: 'red' }}"> to apple</router-link>
+//直接路由带路由参数params，params 不生效，如果提供了 path，params 会被忽略
+<router-link :to="{path: 'apple', params: { color: 'red' }}"> to apple</router-link>
+// 命名路由带路由参数params，地址栏是/apple/red
+<router-link :to="{name: 'applename', params: { color: 'red' }}"> to apple</router-link>
+```
+
+该方法的参数可以是一个字符串路径，或者一个描述地址的对象。
 
 ## 6-5关于添加的页面和路由视图的说明
 

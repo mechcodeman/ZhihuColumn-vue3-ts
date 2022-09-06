@@ -1,9 +1,11 @@
 import { createStore } from 'vuex'
 import { testData, testPosts, ColumnProps, PostProps } from './testData'
+export { ColumnProps, PostProps } from './testData'
 interface UserProps { // 定义用户信息对象接口
   isLogin: boolean;
   name?: string;
-  id?: number
+  id?: number;
+  columnId?: number;
 }
 export interface GlobalDataProps { // 定义数据类型并导出为全局类型
   columns: ColumnProps[];
@@ -14,11 +16,14 @@ const store = createStore<GlobalDataProps>({
   state: {
     columns: testData, // testData.ts中导出的数据模块，下同
     posts: testPosts,
-    user: { isLogin: true, name: '低调的viking' }
+    user: { isLogin: true, name: '低调的viking', columnId: 1 }
   },
   mutations: {
     login(state) { // 使用mutations修改数据，实现点击页面上的登录时能够发生数据的变化并且触发页面的变化
       state.user = { isLogin: true, name: '低调的viking' }
+    },
+    createPost(state, newPost) {
+      state.posts.push(newPost)
     }
   },
   getters: { // 同计算属性一样，getter可以根据他的依赖值缓存起来，当依赖值发生改变时才会重新计算
