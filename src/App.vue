@@ -22,7 +22,7 @@
 import { defineComponent, computed } from 'vue'
 import { useStore } from 'vuex'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import GlobalTrueHeader, { UserProps } from './components/GlobalTrueHeader.vue'
+import GlobalTrueHeader from './components/GlobalTrueHeader.vue'
 export default defineComponent({
   name: 'App',
   components: {

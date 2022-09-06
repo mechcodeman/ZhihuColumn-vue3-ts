@@ -14,11 +14,11 @@ const store = createStore<GlobalDataProps>({
   state: {
     columns: testData, // testData.ts中导出的数据模块，下同
     posts: testPosts,
-    user: { isLogin: false }
+    user: { isLogin: true, name: '低调的viking' }
   },
   mutations: {
     login(state) { // 使用mutations修改数据，实现点击页面上的登录时能够发生数据的变化并且触发页面的变化
-      state.user = { ...state.user, isLogin: true, name: '低调的viking' }
+      state.user = { isLogin: true, name: '低调的viking' }
     }
   },
   getters: { // 同计算属性一样，getter可以根据他的依赖值缓存起来，当依赖值发生改变时才会重新计算

@@ -905,15 +905,16 @@ export default defineComponent({
 
 组件中定义具名插槽
 
-```ts
+```html5
 <slot name="center">这里可以填写默认值，当组件使用者没有进行填充时，center会显示</slot>
 ```
 
 使用具名插槽
 需要使用< template ></ template >包裹住填充的内容
 
-```ts
+```html5
 <template v-slot:center>
+    <!--此处可简写为 <template #center> -->
      <!--填充的内容-->
 </template>
 ```
@@ -1197,3 +1198,81 @@ console.log('store', store.state.count)
 store.commit('add')
 console.log('count', store.state.count)
 ```
+
+## 6-8 Vuex 整合当前应用
+
+**定义 store 文件**
+
+```typescript
+import { createStore } from 'vuex'
+import { testData, testPosts, ColumnProps, PostProps } from './testData'
+interface UserProps {
+  isLogin: boolean;
+  name?: string;
+  id?: number;
+}
+export interface GlobalDataProps {
+  columns: ColumnProps[];
+  posts: PostProps[];
+  user: UserProps;
+}
+const store = createStore<GlobalDataProps>({
+  state: {
+    columns: testData,
+    posts: testPosts,
+    user: { isLogin: false }
+  },
+  mutations: {
+    login(state) {
+      state.user = { ...state.user, isLogin: true, name: 'viking' }
+    }
+  }
+})
+
+export default store
+```
+
+**使用**
+
+```typescript
+import { useStore } from 'vuex'
+import { GlobalDataProps } from '../store'
+
+...
+const store = useStore<GlobalDataProps>()
+const list = computed(() => store.state.columns)
+```
+
+## 6-9 Vuex getters
+
+vuex getters 文档 ：https://vuex.vuejs.org/zh/guide/getters.html
+
+Vuex 允许我们在 store 中定义“getter”（可以认为是 store 的计算属性）。就像计算属性一样，getter 的返回值会根据它的依赖被缓存起来，且只有当它的依赖值发生了改变才会被重新计算。
+
+```typescript
+getters: {
+  biggerColumnsLen(state) {
+    return state.columns.filter(c => c.id > 2).length
+  }
+}
+// 定义完毕，就可以在应用中使用这个 getter 了
+// Getter 会暴露为 store.getters 对象，你可以以属性的形式访问这些值：
+const biggerColumnsLen =computed(()=>store.getters.biggerColumnsLen)
+getColumnById: (state) => (id: number) => {
+  return state.columns.find(c => c.id === id)
+},
+getPostsByCid: (state) => (id: number) => {
+  return state.posts.filter(post => post.columnId === id)
+}
+// 定义完毕以后就可以在应用中使用 getter 快速的拿到这两个值了
+const column = computed(() => store.getters.getColumnById(currentId))
+const list = computed(() => store.getters.getPostsByCid(currentId))
+```
+
+## 6-10 添加新建文章页面
+
+当前应用的结构示意图
+
+![image-20220906152045970](C:\Users\Chenpengyu\AppData\Roaming\Typora\typora-user-images\image-20220906152045970.png)
+
+post使用columnId来表明自身属于哪个column，因此新建post需要columnId，每个专栏都有一个对应的作者author，与用户登录信息是同一个数据结构，所以新建文章时可以从当前登录用户的信息中拿到columnId，然后创建文章
