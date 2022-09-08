@@ -1379,3 +1379,162 @@ router.beforeEach((to, from, next) => {
   }
 })
 ```
+
+# 第7章 前后端结合 - 项目整合后端接口
+
+## 7-2 RESTful API 设计理念
+
+[https://en.wikipedia.org/wiki/Representational_state_transfer](RESTful API)是目前比较成熟的一套互联网应用程序的API设计理论。 **Endpoint**
+
+> 在RESTful架构中，每个网址代表一种资源（resource），所以网址中不能有动词，只能有名词，而且所用的名词往往与数据库的表格名对应。一般来说，数据库中的表都是同种记录的"集合"（collection），所以API中的名词也应该使用复数。
+
+```text
+https://api.examples.com/teams
+https://api.examples.com/players
+```
+
+**Verb 动词**
+
+- GET（SELECT）：从服务器取出资源（一项或多项）
+- POST（CREATE）：在服务器新建一个资源
+- PUT（UPDATE）：在服务器更新资源
+- PATCH（UPDATE）：在服务器更新资源
+- DELETE（DELETE）：从服务器删除资源
+
+**举例**
+
+```text
+// endpoints
+https://api.example.com/teams
+https://api.example.com/players
+
+
+// verbs
+GET /teams：列出所有球队
+POST /teams：新建一个球队
+GET /teams/ID：获取某个球队的信息
+PUT /teams/ID：更新某个球队的信息（提供球队的全部信息）
+PATCH /teams/ID：更新某个球队的信息（提供球队的部分信息）
+{
+  name: 'new team name'
+}
+DELETE /teams/ID：删除某个球队
+
+
+// 复杂结构 一对多
+GET /teams/ID/players：列出某个指定球队的所有球员
+
+
+// 常见状态码
+200 OK - [GET]：服务器成功返回用户请求的数据
+201 CREATED - [POST/PUT/PATCH]：用户新建或修改数据成功。
+204 NO CONTENT - [DELETE]：用户删除数据成功。
+401 Unauthorized - [*]：表示用户没有权限（令牌、用户名、密码错误）。
+403 Forbidden - [*] 表示用户得到授权（与401错误相对），但是访问是被禁止的。
+404 NOT FOUND - [*]：用户发出的请求针对的是不存在的记录，服务器没有进行操作。
+
+// 项目使用的 endpoints
+GET /columns：列出所有专栏
+GET /columns/ID：列出某个专栏的信息
+GET /columns/ID/posts：列出某个专栏的所有文章
+POST /columns/ID/posts 在某个专栏创建文章(需要权限)
+GET /posts/ID: 列出某个文章的信息
+POST /users/login 用户登录
+GET /users/current 获取当前用户登录信息(需要权限)
+```
+
+## 7-3 使用 swagger在线文档查看接口详情
+
+**接口文档需要包括的点**
+
+- 第一 endponits，是具体的路径，或者说是网址。
+- 第二 使用什么样的 method，get，post，put，patch 或者 delete
+- 第三 发送请求要有什么样的参数，参数是在 url 上的 query还是 body 里面的复杂信息。
+- 第四 请求返回的格式是什么样的。
+
+**如果使用文档，有可能是这样的**
+
+```text
+### endpoints 
+GET /teams/${ID}/players
+
+### parameters
+{
+  name: 'ID',
+  desc: '当前球队的 ID',
+  type: 'string'
+}
+
+### responses
+**200响应**
+
+  {
+    "code": 0,
+    "data": [
+      {
+        "createdAt": "2020-06-05 16:45:22",
+        "description": "有一段非常有意思的简介，可以更新一下欧",
+        "name": "洛杉矶湖人",
+        "_id": "5eda0622acb0d2280c10385e"
+      },
+      {
+        "createdAt": "2020-06-05 16:45:22",
+        "description": "有一段非常有意思的简介，可以更新一下欧",
+        "name": "金州勇士",
+        "_id": "5eda0544ce65c327d718e57b"
+      }
+    ],
+    "msg": "请求成功"
+  }
+
+**401响应**
+```
+
+**文档地址：(http://api.vikingship.xyz/)[http://api.vikingship.xyz/] 基于 (swagger)[https://swagger.io/]**
+
+## 7-4 axios 的基本用法和独家后端API 使用（必看） 7-5 后端Icode终极使用方案
+
+地址：https://coding.imooc.com/lesson/449.html#mid=39379
+
+慕课网提供的 Icode 经过几次升级，现在把最终的解决方案整理如下，供同学们参考。 可以在 main.ts 中的拦截器里面一劳永逸的添加。
+
+```typescript
+// 替换 baseURL
+axios.defaults.baseURL = 'http://apis.imooc.com/api/'
+// 下面的 icode 值是从慕课网获取的 token 值，可以在课程右侧的项目接口校验码找到
+axios.interceptors.request.use(config => {
+  ... 其他代码
+  // get 请求，添加到 url 中
+  config.params = { ...config.params, icode: '******' }
+  // 其他请求，添加到 body 中
+  // 如果是上传文件，添加到 FormData 中
+  if (config.data instanceof FormData) {
+    config.data.append('icode', '******')
+  } else {
+  // 普通的 body 对象，添加到 data 中
+    config.data = { ...config.data, icode: '******' }
+  }
+  return config
+})
+```
+
+## 7-6 使用vuex action 发送异步请求
+
+官方文档地址：https://vuex.vuejs.org/zh/guide/actions.html
+
+mutations不支持异步请求，必须是同步函数。
+
+Action 类似于 mutation，不同在于：
+
+- Action 提交的是 mutation，而不是直接变更状态，可以包含任意的异步操作 。
+- Action 可以包含任意异步操作。
+
+在Vuex中，mutations用于同步事务，Action用于异步事务
+
+相应的，其调用方法commit和dispatch也有所区别
+
+- dispatch推送一个action。
+- dispatch 异步操作 this.store.dispatch('action的方法',arg)，调用actions里的方法。
+- commit同步操作this.store.commit('mutations的方法', arg)，调用mutations里的方法。
+
+代码提交地址：https://git.imooc.com/coding-449/zheye/commit/216aa26136b6e4b6139a8806926b1d692c736dbd

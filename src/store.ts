@@ -1,11 +1,30 @@
+import axios from 'axios'
 import { createStore } from 'vuex'
-import { testData, testPosts, ColumnProps, PostProps } from './testData'
-export { ColumnProps, PostProps } from './testData'
+import { testPosts } from './testData'
 interface UserProps { // 定义用户信息对象接口
   isLogin: boolean;
   name?: string;
   id?: number;
   columnId?: number;
+}
+interface ImageProps {
+  _id?: string;
+  url?: string;
+  createdAt?: string;
+}
+export interface ColumnProps {
+  _id: string;
+  title: string;
+  avatar?: ImageProps;
+  description: string;
+}
+export interface PostProps {
+  id: number;
+  title: string;
+  content: string;
+  image?: string;
+  createdAt: string;
+  columnId: number;
 }
 export interface GlobalDataProps { // 定义数据类型并导出为全局类型
   columns: ColumnProps[];
@@ -14,7 +33,7 @@ export interface GlobalDataProps { // 定义数据类型并导出为全局类型
 }
 const store = createStore<GlobalDataProps>({
   state: {
-    columns: testData, // testData.ts中导出的数据模块，下同
+    columns: [], // 置空等待后端传入数据
     posts: testPosts,
     user: { isLogin: true, name: '低调的viking', columnId: 1 }
   },
@@ -24,14 +43,21 @@ const store = createStore<GlobalDataProps>({
     },
     createPost(state, newPost) {
       state.posts.push(newPost)
+    },
+    fetchColumns(state, rawData) {
+      state.columns = rawData.data.list
+    }
+  },
+  actions: {
+    fetchColumns(context) { // actions函数接收一个与store实例具有相同方法和属性的context对象
+      axios.get('/columns').then(resp => {
+        context.commit('fetchColumns', resp.data) // 通过context的commit方法来调用一个mutation，传入参数请求结果的data，利用mutation动态监视数据
+      })
     }
   },
   getters: { // 同计算属性一样，getter可以根据他的依赖值缓存起来，当依赖值发生改变时才会重新计算
-    biggerColumnsLen(state) {
-      return state.columns.filter(c => c.id > 2).length
-    },
-    getColumnById: (state) => (id: number) => {
-      return state.columns.find(c => c.id === id)
+    getColumnById: (state) => () => {
+      return state.columns
     },
     // 这个 getter 的特殊之处在于要传参数进去, 对于这种 getter 我们需要返回一个对应的函数，其实就是假如有参数就要返回一个函数。然后调用的时候可以传入参数。对比以下两个程序段以理解
     /*
