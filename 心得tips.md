@@ -1589,6 +1589,12 @@ axios.interceptors.response.use(config => {
 })
 ```
 
+### tips 关于axios拦截多次请求的问题
+
+如果axios设置全局拦截请求，如果当前页面同时有多个请求发起则可能会展示不稳定。
+
+**解决：**假如有多个请求的逻辑 要做的比较完美的话 可以添加一个计数器，每有一个 loading，给数目 加 1，每个请求完成给数目 减 1，最后假如等于零那么就是全部请求结束
+
 ## 7-10 7-11 Loader 组件编码
 
 Bootstrap 提供的 Spinner：https://getbootstrap.com/docs/5.1/components/spinners/

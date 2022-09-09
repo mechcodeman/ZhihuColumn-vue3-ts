@@ -2,6 +2,7 @@
   <div class="container">
     <!-- 在所有页面顶部渲染顶栏 -->
     <global-true-header :user="currentUser"></global-true-header>
+    <h1 v-if="isLoading">hello hardworkingman</h1>
     <!-- 通过main.ts配置关联了Home、ColumnDetail、Login三个路由 -->
     <router-view></router-view>
     <footer class="text-center py-4 text-secondary bg-light mt-6">
@@ -31,8 +32,10 @@ export default defineComponent({
   setup() {
     const store = useStore()
     const currentUser = computed(() => store.state.user)
+    const isLoading = computed(() => store.state.loading)
     return {
-      currentUser
+      currentUser,
+      isLoading
     }
   }
 })

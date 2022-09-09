@@ -27,6 +27,7 @@ export interface PostProps {
   column: string;
 }
 export interface GlobalDataProps { // 定义数据类型并导出为全局类型
+  loading: boolean;
   columns: ColumnProps[];
   posts: PostProps[];
   user: UserProps;
@@ -37,6 +38,7 @@ const getAndCommit = async (url: string, mutationName: string, commit: Commit) =
 }
 const store = createStore<GlobalDataProps>({
   state: {
+    loading: false,
     columns: [], // 置空等待后端传入数据,下同
     posts: [],
     user: { isLogin: true, name: '低调的viking', columnId: 1 }
@@ -56,23 +58,21 @@ const store = createStore<GlobalDataProps>({
     },
     fetchPosts(state, rawData) {
       state.posts = rawData.data.list
+    },
+    setLoading(state, status) {
+      state.loading = status
     }
   },
   actions: {
-    async fetchColumns({ commit }) { // 用async await包裹异步请求 // { commit }意为将context展开并取出其中的commit方法
-      const { data } = await axios.get('/columns') // await当其后面所接的异步任务完成时再继续执行当前操作，即请求数据返回后再赋给data // { data }的写法意思是将返回值resp展开取出其中的data，
-      commit('fetchColumns', data)
-    },
     // 自定义函数实现重复性的请求功能
-    // fetchColumns({ commit }) {
-    //   getAndCommit('/columns', 'fetchColumns', commit)
-    // },
+    fetchColumns({ commit }) {
+      getAndCommit('/columns', 'fetchColumns', commit)
+    },
     fetchColumn({ commit }, cid) {
       getAndCommit(`/columns/${cid}`, 'fetchColumn', commit)
     },
-    async fetchPosts({ commit }, cid) {
-      const { data } = await axios.get(`/columns/${cid}/posts`)
-      commit('fetchPosts', data)
+    fetchPosts({ commit }, cid) {
+      getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
     }
   },
   getters: { // 同计算属性一样，getter可以根据他的依赖值缓存起来，当依赖值发生改变时才会重新计算
