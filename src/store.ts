@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { createStore } from 'vuex'
-import { testPosts } from './testData'
 interface UserProps { // 定义用户信息对象接口
   isLogin: boolean;
   name?: string;
@@ -19,12 +18,13 @@ export interface ColumnProps {
   description: string;
 }
 export interface PostProps {
-  id: number;
+  _id: string;
   title: string;
-  content: string;
-  image?: string;
+  excerpt?: string;
+  content?: string;
+  image?: ImageProps;
   createdAt: string;
-  columnId: number;
+  column: string;
 }
 export interface GlobalDataProps { // 定义数据类型并导出为全局类型
   columns: ColumnProps[];
@@ -33,8 +33,8 @@ export interface GlobalDataProps { // 定义数据类型并导出为全局类型
 }
 const store = createStore<GlobalDataProps>({
   state: {
-    columns: [], // 置空等待后端传入数据
-    posts: testPosts,
+    columns: [], // 置空等待后端传入数据,下同
+    posts: [],
     user: { isLogin: true, name: '低调的viking', columnId: 1 }
   },
   mutations: {
@@ -46,6 +46,12 @@ const store = createStore<GlobalDataProps>({
     },
     fetchColumns(state, rawData) {
       state.columns = rawData.data.list
+    },
+    fetchColumn(state, rawData) {
+      state.columns = [rawData.data]
+    },
+    fetchPosts(state, rawData) {
+      state.posts = rawData.data.list
     }
   },
   actions: {
@@ -53,11 +59,21 @@ const store = createStore<GlobalDataProps>({
       axios.get('/columns').then(resp => {
         context.commit('fetchColumns', resp.data) // 通过context的commit方法来调用一个mutation，传入参数请求结果的data，利用mutation动态监视数据
       })
+    },
+    fetchColumn({ commit }, cid) {
+      axios.get(`/columns/${cid}`).then(resp => {
+        commit('fetchColumn', resp.data)
+      })
+    },
+    fetchPosts({ commit }, cid) {
+      axios.get(`/columns/${cid}/posts`).then(resp => {
+        commit('fetchPosts', resp.data)
+      })
     }
   },
   getters: { // 同计算属性一样，getter可以根据他的依赖值缓存起来，当依赖值发生改变时才会重新计算
-    getColumnById: (state) => () => {
-      return state.columns
+    getColumnById: (state) => (id: string) => {
+      return state.columns.find(c => c._id === id)
     },
     // 这个 getter 的特殊之处在于要传参数进去, 对于这种 getter 我们需要返回一个对应的函数，其实就是假如有参数就要返回一个函数。然后调用的时候可以传入参数。对比以下两个程序段以理解
     /*
@@ -70,8 +86,8 @@ const store = createStore<GlobalDataProps>({
             return ...
         },
     */
-    getPostsByCid: (state) => (cid: number) => {
-      return state.posts.filter(post => post.columnId === cid)
+    getPostsByCid: (state) => (cid: string) => {
+      return state.posts.filter(post => post.column === cid)
     }
   }
 })

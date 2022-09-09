@@ -59,10 +59,10 @@ export default defineComponent({
         const { columnId } = store.state.user
         if (columnId) { // typeguard，columnId定义时可能为undefinded导致下面的columnId类型判断报错
           const newPost: PostProps = {
-            id: new Date().getTime(),
+            _id: new Date().getTime() as unknown as string,
             title: titleVal.value, // 获取通过v-model双向绑定的input输入框内容，下同
             content: contentVal.value,
-            columnId,
+            column: columnId as unknown as string,
             createdAt: new Date().toLocaleString()
           }
           store.commit('createPost', newPost)
