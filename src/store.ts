@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { createStore } from 'vuex'
+import { createStore, Commit } from 'vuex'
 interface UserProps { // 定义用户信息对象接口
   isLogin: boolean;
   name?: string;
@@ -31,6 +31,10 @@ export interface GlobalDataProps { // 定义数据类型并导出为全局类型
   posts: PostProps[];
   user: UserProps;
 }
+const getAndCommit = async (url: string, mutationName: string, commit: Commit) => {
+  const { data } = await axios.get(url)
+  commit(mutationName, data)
+}
 const store = createStore<GlobalDataProps>({
   state: {
     columns: [], // 置空等待后端传入数据,下同
@@ -55,20 +59,20 @@ const store = createStore<GlobalDataProps>({
     }
   },
   actions: {
-    fetchColumns(context) { // actions函数接收一个与store实例具有相同方法和属性的context对象
-      axios.get('/columns').then(resp => {
-        context.commit('fetchColumns', resp.data) // 通过context的commit方法来调用一个mutation，传入参数请求结果的data，利用mutation动态监视数据
-      })
+    async fetchColumns({ commit }) { // 用async await包裹异步请求 // { commit }意为将context展开并取出其中的commit方法
+      const { data } = await axios.get('/columns') // await当其后面所接的异步任务完成时再继续执行当前操作，即请求数据返回后再赋给data // { data }的写法意思是将返回值resp展开取出其中的data，
+      commit('fetchColumns', data)
     },
+    // 自定义函数实现重复性的请求功能
+    // fetchColumns({ commit }) {
+    //   getAndCommit('/columns', 'fetchColumns', commit)
+    // },
     fetchColumn({ commit }, cid) {
-      axios.get(`/columns/${cid}`).then(resp => {
-        commit('fetchColumn', resp.data)
-      })
+      getAndCommit(`/columns/${cid}`, 'fetchColumn', commit)
     },
-    fetchPosts({ commit }, cid) {
-      axios.get(`/columns/${cid}/posts`).then(resp => {
-        commit('fetchPosts', resp.data)
-      })
+    async fetchPosts({ commit }, cid) {
+      const { data } = await axios.get(`/columns/${cid}/posts`)
+      commit('fetchPosts', data)
     }
   },
   getters: { // 同计算属性一样，getter可以根据他的依赖值缓存起来，当依赖值发生改变时才会重新计算

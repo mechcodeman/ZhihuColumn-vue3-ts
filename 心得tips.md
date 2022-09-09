@@ -1538,3 +1538,63 @@ Action 类似于 mutation，不同在于：
 - commit同步操作this.store.commit('mutations的方法', arg)，调用mutations里的方法。
 
 代码提交地址：https://git.imooc.com/coding-449/zheye/commit/216aa26136b6e4b6139a8806926b1d692c736dbd
+
+## 7-7 使用vuex action 发送异步请求第二部分
+
+代码提交地址：https://git.imooc.com/coding-449/zheye/commit/29922e606f0b58d6e77436e0032f42aa44bfebc6
+
+## 7-8 使用 async 和 await 改造异步请求
+
+**async 和 await 是基基于promises的语法糖，使异步代码更易于编写和阅读。通过使用它们，异步代码看起来更像是老式同步代码，因此它们非常值得学习。**
+
+文档地址：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
+
+代码示例:
+
+```javascript
+// 例一
+function hello() { return "Hello" };
+hello();
+
+async function hello() { return "Hello" };
+hello();
+
+hello().then((value) => console.log(value))
+
+// 例二
+async function hello() {
+  const greeting = await Promise.resolve("Hello");
+  return greeting
+};
+
+hello().then((value) => console.log(value));
+```
+
+代码提交地址：https://git.imooc.com/coding-449/zheye/commit/e2c40255bfe4d5aa24f0211f0660302026df3171
+
+## 7-9 使用axios拦截器添加loading效果
+
+Axios 拦截器文档地址:https://axios-http.com/docs/interceptors
+
+```typescript
+axios.interceptors.request.use(config => {
+  store.commit('setLoading', true)
+  return config
+})
+
+
+axios.interceptors.response.use(config => {
+  store.commit('setLoading', false)
+  return config
+})
+```
+
+## 7-10 7-11 Loader 组件编码
+
+Bootstrap 提供的 Spinner：https://getbootstrap.com/docs/5.1/components/spinners/
+
+Loader 第一部分编码地址:https://git.imooc.com/coding-449/zheye/commit/cd8a22fbaf8dd36ada4caaed880394603740edd2
+
+Vue3 关于 Teleport 的官方文档：https://vuejs.org/guide/built-ins/teleport.html#basic-usage
+
+Loader 第二部分编码地址:https://git.imooc.com/coding-449/zheye/commit/68b44a920a0b62d10f645cda0f013577f50eac55

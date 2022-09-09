@@ -62,7 +62,7 @@ export default defineComponent({
             _id: new Date().getTime() as unknown as string,
             title: titleVal.value, // 获取通过v-model双向绑定的input输入框内容，下同
             content: contentVal.value,
-            column: columnId as unknown as string,
+            column: columnId.toString(),
             createdAt: new Date().toLocaleString()
           }
           store.commit('createPost', newPost)
