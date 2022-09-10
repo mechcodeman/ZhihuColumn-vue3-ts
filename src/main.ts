@@ -11,7 +11,9 @@ axios.interceptors.request.use(config => { // 在全局设置使用interceptor�
   return config
 })
 axios.interceptors.response.use(config => { // 在全局设置使用interceptor来拦截当前应用的请求并加入逻辑实现需求的方法
-  store.commit('setLoading', false)
+  setTimeout(() => {
+    store.commit('setLoading', false)
+  }, 2000)
   return config
 })
 const app = createApp(App)

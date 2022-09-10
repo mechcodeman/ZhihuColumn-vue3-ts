@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 在所有页面顶部渲染顶栏 -->
     <global-true-header :user="currentUser"></global-true-header>
-    <h1 v-if="isLoading">hello hardworkingman</h1>
+    <loader v-if="isLoading"></loader>
     <!-- 通过main.ts配置关联了Home、ColumnDetail、Login三个路由 -->
     <router-view></router-view>
     <footer class="text-center py-4 text-secondary bg-light mt-6">
@@ -24,10 +24,12 @@ import { defineComponent, computed } from 'vue'
 import { useStore } from 'vuex'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import GlobalTrueHeader from './components/GlobalTrueHeader.vue'
+import Loader from './components/Loader.vue'
 export default defineComponent({
   name: 'App',
   components: {
-    GlobalTrueHeader
+    GlobalTrueHeader,
+    Loader
   },
   setup() {
     const store = useStore()
