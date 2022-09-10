@@ -27,6 +27,7 @@ export interface PostProps {
   column: string;
 }
 export interface GlobalDataProps { // 定义数据类型并导出为全局类型
+  token: string;
   loading: boolean;
   columns: ColumnProps[];
   posts: PostProps[];
@@ -36,17 +37,23 @@ const getAndCommit = async (url: string, mutationName: string, commit: Commit) =
   const { data } = await axios.get(url)
   commit(mutationName, data)
 }
+const postAndCommit = async (url: string, mutationName: string, commit: Commit, payload: any) => { // payload就是需要传的data
+  const { data } = await axios.post(url, payload)
+  commit(mutationName, data)
+  return data // 此处返回的应该是一个Promise对象，因为async返回的就是Promise
+}
 const store = createStore<GlobalDataProps>({
   state: {
+    token: '',
     loading: false,
     columns: [], // 置空等待后端传入数据,下同
     posts: [],
-    user: { isLogin: true, name: '低调的viking', columnId: 1 }
+    user: { isLogin: false, name: '低调的viking', columnId: 1 }
   },
   mutations: {
-    login(state) { // 使用mutations修改数据，实现点击页面上的登录时能够发生数据的变化并且触发页面的变化
+    /* login(state) { // 使用mutations修改数据，实现点击页面上的登录时能够发生数据的变化并且触发页面的变化
       state.user = { isLogin: true, name: '低调的viking' }
-    },
+    }, */
     createPost(state, newPost) {
       state.posts.push(newPost)
     },
@@ -61,6 +68,9 @@ const store = createStore<GlobalDataProps>({
     },
     setLoading(state, status) {
       state.loading = status
+    },
+    login(state, rawData) {
+      state.token = rawData.data.token
     }
   },
   actions: {
@@ -73,6 +83,9 @@ const store = createStore<GlobalDataProps>({
     },
     fetchPosts({ commit }, cid) {
       getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
+    },
+    login({ commit }, payload) {
+      return postAndCommit('/user/login', 'login', commit, payload)
     }
   },
   getters: { // 同计算属性一样，getter可以根据他的依赖值缓存起来，当依赖值发生改变时才会重新计算

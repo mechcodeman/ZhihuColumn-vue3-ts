@@ -50,8 +50,14 @@ export default defineComponent({
     ]
     const onFormSubmit = (result: boolean) => {
       if (result) {
-        router.push('/') // router-link内部和router对象分享的是同一段代码
-        store.commit('login') // 使用commit触发mutations指令
+        const payload = {
+          email: emailVal.value,
+          password: passwordVal.value
+        }
+        store.dispatch('login', payload).then(data => {
+          console.log(data)
+          router.push('/')
+        })
       }
     }
     return {
