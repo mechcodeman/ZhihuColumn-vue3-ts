@@ -56,17 +56,17 @@ export default defineComponent({
     ]
     const onFormSubmit = (result: boolean) => {
       if (result) {
-        const { columnId } = store.state.user
-        if (columnId) { // typeguard，columnId定义时可能为undefinded导致下面的columnId类型判断报错
+        const { column } = store.state.user
+        if (column) { // typeguard，columnId定义时可能为undefinded导致下面的columnId类型判断报错
           const newPost: PostProps = {
             _id: new Date().getTime() as unknown as string,
             title: titleVal.value, // 获取通过v-model双向绑定的input输入框内容，下同
             content: contentVal.value,
-            column: columnId.toString(),
+            column: column.toString(),
             createdAt: new Date().toLocaleString()
           }
           store.commit('createPost', newPost)
-          router.push({ name: 'column', params: { id: columnId } }) // 命名路由创建成功后自动跳转到coulumnId（代表当前专栏作者）对应详情页
+          router.push({ name: 'column', params: { id: column } }) // 命名路由创建成功后自动跳转到coulumnId（代表当前专栏作者）对应详情页
         }
       }
     }

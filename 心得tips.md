@@ -1636,6 +1636,10 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded
 
 ## 8-4 登录第三部分 持久化登录状态
 
+通过axios提供的方法给每次请求都添加上响应头
+
+axios.defaults.headers.common.Authorization = AUTH_TOKEN
+
 LocalStorage 文档地址:https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
 
 注意这里为什么不选择 Cookie？

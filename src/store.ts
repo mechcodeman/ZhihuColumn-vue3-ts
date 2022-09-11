@@ -1,10 +1,11 @@
 import axios from 'axios'
 import { createStore, Commit } from 'vuex'
-interface UserProps { // 定义用户信息对象接口
+export interface UserProps { // 定义用户信息对象接口
   isLogin: boolean;
-  name?: string;
-  id?: number;
-  columnId?: number;
+  nickname?: string;
+  _id?: string;
+  column?: string;
+  email?: string;
 }
 interface ImageProps {
   _id?: string;
@@ -48,7 +49,7 @@ const store = createStore<GlobalDataProps>({
     loading: false,
     columns: [], // 置空等待后端传入数据,下同
     posts: [],
-    user: { isLogin: false, name: '低调的viking', columnId: 1 }
+    user: { isLogin: false }
   },
   mutations: {
     /* login(state) { // 使用mutations修改数据，实现点击页面上的登录时能够发生数据的变化并且触发页面的变化
@@ -69,8 +70,13 @@ const store = createStore<GlobalDataProps>({
     setLoading(state, status) {
       state.loading = status
     },
+    fetchCurrentUser(state, rawData) {
+      state.user = { isLogin: true, ...rawData.data }
+    },
     login(state, rawData) {
+      const { token } = rawData.data // 获取token字符串
       state.token = rawData.data.token
+      axios.defaults.headers.common.Authorization = `Bearer ${token}` // 通过axios提供的方法为每次请求添加指定的响应头
     }
   },
   actions: {
@@ -84,8 +90,16 @@ const store = createStore<GlobalDataProps>({
     fetchPosts({ commit }, cid) {
       getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
     },
+    fetchCurrentUser({ commit }) { // 发送请求获取用户的信息（已设置好token响应头）
+      getAndCommit('/user/current', 'fetchCurrentUser', commit)
+    },
     login({ commit }, payload) {
       return postAndCommit('/user/login', 'login', commit, payload)
+    },
+    loginAndFetch({ dispatch }, loginData) { // 组合式异步action请求，因为action返回的是一个promise，所以用then可以再组合一个异步请求action
+      return dispatch('login', loginData).then(() => {
+        return dispatch('fetchCurrentUser')
+      })
     }
   },
   getters: { // 同计算属性一样，getter可以根据他的依赖值缓存起来，当依赖值发生改变时才会重新计算

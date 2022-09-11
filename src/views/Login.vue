@@ -54,7 +54,7 @@ export default defineComponent({
           email: emailVal.value,
           password: passwordVal.value
         }
-        store.dispatch('login', payload).then(data => {
+        store.dispatch('loginAndFetch', payload).then(data => { // 将原来的登录请求更换为新的，包含登录+fetch两步
           console.log(data)
           router.push('/')
         })
