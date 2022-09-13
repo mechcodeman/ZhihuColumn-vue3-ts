@@ -27,7 +27,12 @@ export interface PostProps {
   createdAt: string;
   column: string;
 }
+export interface GlobalErrorProps {
+  status: boolean;
+  message?: string;
+}
 export interface GlobalDataProps { // 定义数据类型并导出为全局类型
+  error: GlobalErrorProps;
   token: string;
   loading: boolean;
   columns: ColumnProps[];
@@ -45,6 +50,7 @@ const postAndCommit = async (url: string, mutationName: string, commit: Commit, 
 }
 const store = createStore<GlobalDataProps>({
   state: {
+    error: { status: false },
     token: localStorage.getItem('token') || '',
     loading: false,
     columns: [], // 置空等待后端传入数据,下同
@@ -69,6 +75,9 @@ const store = createStore<GlobalDataProps>({
     },
     setLoading(state, status) {
       state.loading = status
+    },
+    setError(state, e: GlobalErrorProps) {
+      state.error = e
     },
     fetchCurrentUser(state, rawData) {
       state.user = { isLogin: true, ...rawData.data }

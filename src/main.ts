@@ -21,8 +21,14 @@ axios.interceptors.request.use(config => { // 在全局设置使用interceptor�
 axios.interceptors.response.use(config => { // 在全局设置使用interceptor来拦截当前应用的请求并加入逻辑实现需求的方法
   setTimeout(() => {
     store.commit('setLoading', false)
-  }, 0)
+  }, 500)
   return config
+}, e => { // 设置拦截错误信息
+  console.log(e.response)
+  const { error } = e.response.data
+  store.commit('setError', { status: true, message: error })
+  store.commit('setLoading', false)
+  return Promise.reject(error) // 抛出错误信息
 })
 const app = createApp(App)
 app.use(router)
