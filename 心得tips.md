@@ -11,7 +11,8 @@
 - 第五，权限管理和控制，一个项目需要有用户权限的实现，不仅仅是后端，前端作为一个整体的 SPA 的项目，权限控制也尤为重要，我们需要有权限的获取，权限的持久化，权限的更新，那个路由可访问，哪个需要权限才可以访问。发送异步请求的全局 token 注入，全局拦截，全局信息提示等等和权限相关的内容。
 - 第六，真实的后端API，和后端的交互是整个项目的最重要一环。一些同学在开发项目的时候会使用 mock server，但是由于后端的数据结构常常和最初的文档设计背道而驰，造成最后项目需要再次回炉修改。
 
-**页面所有原型图地址**: https://whimsical.com/Djb2TcWsLTPeapFdM3NaX
+**页面所有原型图地址**: https://whimsical.com/Djb2TcWsLTPeapFdM3NaX·成晟（班主任）
+陈鹏宇同志尊敬师长，做事踏实有礼貌，在班级的各种活动中主动出力，服务他人，为构建和谐的班级大家庭积极主动地贡献力量，在学习生活中认真完成自己的学业，当遇到问题和困难时主动寻求帮助，有乐观积极的生活态度，无不良记录。我同意其按期转为正式党员。
 
 ## 4-2 文件结构和代码规范
 
@@ -1625,6 +1626,10 @@ JWT 的官方网站，可以去试试看:https://jwt.io/
 
 Axios Default Header 设置的文档:https://axios-http.com/docs/config_defaults
 
+通过axios提供的方法给每次请求都添加上响应头
+
+axios.defaults.headers.common.Authorization = AUTH_TOKEN
+
 ```javascript
 // 示例代码
 axios.defaults.baseURL = 'https://api.example.com';
@@ -1636,9 +1641,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded
 
 ## 8-4 登录第三部分 持久化登录状态
 
-通过axios提供的方法给每次请求都添加上响应头
-
-axios.defaults.headers.common.Authorization = AUTH_TOKEN
+![image-20220913202851883](C:\Users\Chenpengyu\AppData\Roaming\Typora\typora-user-images\image-20220913202851883.png)
 
 LocalStorage 文档地址:https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
 

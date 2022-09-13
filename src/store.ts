@@ -45,7 +45,7 @@ const postAndCommit = async (url: string, mutationName: string, commit: Commit, 
 }
 const store = createStore<GlobalDataProps>({
   state: {
-    token: '',
+    token: localStorage.getItem('token') || '',
     loading: false,
     columns: [], // 置空等待后端传入数据,下同
     posts: [],
@@ -75,7 +75,8 @@ const store = createStore<GlobalDataProps>({
     },
     login(state, rawData) {
       const { token } = rawData.data // 获取token字符串
-      state.token = rawData.data.token
+      state.token = token
+      localStorage.setItem('token', token)
       axios.defaults.headers.common.Authorization = `Bearer ${token}` // 通过axios提供的方法为每次请求添加指定的响应头
     }
   },
