@@ -2,8 +2,8 @@
   <div class="container">
     <!-- 在所有页面顶部渲染顶栏 -->
     <global-true-header :user="currentUser"></global-true-header>
-    <h1>{{error.message}}</h1>
     <loader v-if="isLoading"></loader>
+    <message type="error" :message="error.message" v-if="error.status"></message>
     <!-- 通过main.ts配置关联了Home、ColumnDetail、Login三个路由 -->
     <router-view></router-view>
     <footer class="text-center py-4 text-secondary bg-light mt-6">
@@ -27,12 +27,14 @@ import axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import GlobalTrueHeader from './components/GlobalTrueHeader.vue'
 import Loader from './components/Loader.vue'
+import Message from './components/Message.vue'
 import { GlobalDataProps } from './store'
 export default defineComponent({
   name: 'App',
   components: {
     GlobalTrueHeader,
-    Loader
+    Loader,
+    Message
   },
   setup() {
     const store = useStore<GlobalDataProps>() // 为了获得更好的泛型自动补全支持
