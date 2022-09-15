@@ -12,7 +12,12 @@
         </div>
       </div>
     </section>
-    <uploader action="/upload" :beforeUpload="beforeUpload" @file-uploaded="onFileUploaded"></uploader>
+    <uploader action="/upload" :beforeUpload="beforeUpload" @file-uploaded="onFileUploaded">
+      <template #uploaded="dataProps">
+        <!-- 通过vue提供的slot方法拿到被创建的子组件中的数据 -->
+        <img :src="dataProps.uploadedData.data.url" width="500" />
+      </template>
+    </uploader>
     <h4 class="font-weight-bold text-center">发现精彩</h4>
     <!-- 通过子组件渲染所有作者的专栏，其中信息list由testData.ts导入 -->
     <column-list :list="list"></column-list>
