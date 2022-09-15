@@ -29,8 +29,9 @@ import { emitter } from './ValidateForm.vue'
 const emailReg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 const passwordReg = /[A-Za-z].*[0-9]|[0-9].*[A-Za-z]/
 interface RuleProp {
-  type: 'required' | 'email' | 'password' | 'min' | 'max';
+  type: 'required' | 'email' | 'password' | 'min' | 'max' | 'custom';
   message: string;
+  validator?: () => boolean;
 }
 export type RulesProp = RuleProp[]
 export type TagType = 'input' | 'textarea' // 创建一个新的类型用于支持input和textarea两种输入框
@@ -83,6 +84,9 @@ export default defineComponent({
               } else {
                 passed = false
               }
+              break
+            case 'custom':
+              passed = rule.validator ? rule.validator() : true
               break
             default:
               break

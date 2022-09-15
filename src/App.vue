@@ -41,6 +41,10 @@ export default defineComponent({
     const token = computed(() => store.state.token)
     const error = computed(() => store.state.error)
     onMounted(() => {
+      const message = createMessage('checkhere', 'success')
+      setTimeout(() => {
+        message.destroy()
+      }, 2000)
       if (!currentUser.value.isLogin && token.value) {
         axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
         store.dispatch('fetchCurrentUser')

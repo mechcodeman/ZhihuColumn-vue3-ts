@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "bootstrap": "^5.2.0",
+    "core-js": "^3.8.3",
     "mitt": "^3.0.0",
     "vue": "^3.2.13",
     "vue-router": "^4.1.5",
@@ -18,6 +19,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
+    "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-plugin-typescript": "~5.0.0",
     "@vue/cli-service": "~5.0.0",

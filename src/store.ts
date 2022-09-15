@@ -87,6 +87,11 @@ const store = createStore<GlobalDataProps>({
       state.token = token
       localStorage.setItem('token', token)
       axios.defaults.headers.common.Authorization = `Bearer ${token}` // 通过axios提供的方法为每次请求添加指定的响应头
+    },
+    logout(state) {
+      state.token = ''
+      localStorage.removeItem('token')
+      state.user = { isLogin: false }
     }
   },
   actions: {

@@ -1706,7 +1706,7 @@ const vnode = {
 
 #### Render Pipeline
 
-- **Compile**， Vue 组件的 Template 会被编译成 **render function**，一个可以返回 Virtual DOM 树的函数。
+- **Compile**， Vue 组件的 Template 会被编译成 **render function**——一个可以返回 Virtual DOM 树的函数。
 - **Mount**，执行 render function，遍历虚拟DOM 树，生成真正的 DOM 节点。
 - **Patch**，当组件中任何响应式对象（依赖）发生变化的时候，执行更新操作 。生成新的虚拟节点树，Vue 内部会遍历新的虚拟节点树，和旧的树做对比，然后执行**必要**的更新。
 
@@ -1750,7 +1750,7 @@ Object
 
 ## 8-9 创建 Vnode 以及使用 render function
 
-#### [#](http://docs.vikingship.xyz/auth.html#创建-vnode)创建 Vnode
+#### 创建 Vnode
 
 **h 和 createVnode** 都可以创建 vnode，h 是 hyperscript 的缩写，意思就是 “JavaScript that produces HTML (hypertext markup language)”，很多 virtualDOM 的实现都使用这个函数名称。还有一个函数称之为 createVnode，更形象，两个函数的用法几乎是一样的。
 
@@ -1766,7 +1766,7 @@ const vnode = h(
 )
 ```
 
-#### 声明 Render Function
+#### 声明 Render Function， 官方没有提供的独特方法
 
 当使用 composition API 的时候，在 setup 当中直接返回一个对象，代表着给模版使用的数据，当要使用 render function 的时候，可以直接返回一个函数。
 
