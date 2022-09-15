@@ -24,7 +24,8 @@ export default defineComponent({
       type: Function as PropType<CheckFunction>
     }
   },
-  setup(props) {
+  emits: ['file-uploaded', 'file-uploaded-error'],
+  setup(props, context) {
     const fileInput = ref<null | HTMLInputElement>(null) // 假如我们要拿到模版里面的某个DOM节点，我们需要创建一个 ref，比如
     /* const node = ref()
       // 返回
@@ -57,10 +58,11 @@ export default defineComponent({
             'Content-Type': 'multipart/form-data'
           }
         }).then(resp => {
-          console.log(resp.data)
           fileStatus.value = 'success'
-        }).catch(() => {
+          context.emit('file-uploaded', resp.data)
+        }).catch((error) => {
           fileStatus.value = 'error'
+          context.emit('file-uploaded-error', { error })
         }).finally(() => {
           if (fileInput.value) {
             fileInput.value.value = ''

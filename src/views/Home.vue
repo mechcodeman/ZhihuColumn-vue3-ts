@@ -12,7 +12,7 @@
         </div>
       </div>
     </section>
-    <uploader action="/upload" :beforeUpload="beforeUpload"></uploader>
+    <uploader action="/upload" :beforeUpload="beforeUpload" @file-uploaded="onFileUploaded"></uploader>
     <h4 class="font-weight-bold text-center">发现精彩</h4>
     <!-- 通过子组件渲染所有作者的专栏，其中信息list由testData.ts导入 -->
     <column-list :list="list"></column-list>
@@ -22,7 +22,7 @@
 <script lang="ts">
 import { defineComponent, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { GlobalDataProps } from '../store' // 在store.ts中定义的全局类型可以直接拿出来，也可以当作泛型传到useStore中，获得更好的自动补全
+import { GlobalDataProps, ResponseType, ImageProps } from '../store' // 在store.ts中定义的全局类型可以直接拿出来，也可以当作泛型传到useStore中，获得更好的自动补全
 import ColumnList from '../components/ColumnList.vue'
 import Uploader from '../components/Uploader.vue'
 import createMessage from '../components/createMessage'
@@ -45,9 +45,13 @@ export default defineComponent({
       }
       return isJPG
     }
+    const onFileUploaded = (rawData: ResponseType<ImageProps>) => {
+      createMessage(`上传图片ID ${rawData.data._id}`, 'success')
+    }
     return {
       list,
-      beforeUpload
+      beforeUpload,
+      onFileUploaded
     }
   }
 })

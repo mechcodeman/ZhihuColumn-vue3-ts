@@ -1,5 +1,11 @@
 import axios from 'axios'
 import { createStore, Commit } from 'vuex'
+// eslint-disable-next-line @typescript-eslint/ban-types
+export interface ResponseType<P = Record<string, unknown>> {
+  code: number;
+  msg: string;
+  data: P;
+}
 export interface UserProps { // 定义用户信息对象接口
   isLogin: boolean;
   nickname?: string;
@@ -7,7 +13,7 @@ export interface UserProps { // 定义用户信息对象接口
   column?: string;
   email?: string;
 }
-interface ImageProps {
+export interface ImageProps {
   _id?: string;
   url?: string;
   createdAt?: string;
