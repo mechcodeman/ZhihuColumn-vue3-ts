@@ -75,7 +75,7 @@ export default defineComponent({
       const files = target.files
       if (files) {
         const uploadedFile = files[0]
-        const formData = new FormData()
+        const formData = new FormData() // 通过创建FormData来传输数据
         formData.append(uploadedFile.name, uploadedFile)
         axios.post('/upload', formData, {
           headers: {
