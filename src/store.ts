@@ -19,12 +19,10 @@ export interface ColumnProps {
   description: string;
 }
 export interface PostProps {
-  _id: string;
   title: string;
   excerpt?: string;
   content?: string;
   image?: ImageProps;
-  createdAt: string;
   column: string;
 }
 export interface GlobalErrorProps {

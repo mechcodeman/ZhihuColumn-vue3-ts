@@ -1,6 +1,7 @@
 <template>
   <div class="create-post-page">
     <h4>新建文章</h4>
+    <input type="file" name="file" @change.prevent="handleFileChange" />
     <validate-form @form-submit="onFormSubmit">
       <div class="mb-3">
         <label class="form-label">文章标题：</label>
@@ -33,6 +34,7 @@
 import { defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 import { GlobalDataProps, PostProps } from '../store'
 import ValidateInput, { RulesProp } from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
@@ -59,15 +61,29 @@ export default defineComponent({
         const { column } = store.state.user
         if (column) { // typeguard，columnId定义时可能为undefinded导致下面的columnId类型判断报错
           const newPost: PostProps = {
-            _id: new Date().getTime() as unknown as string,
             title: titleVal.value, // 获取通过v-model双向绑定的input输入框内容，下同
             content: contentVal.value,
-            column: column.toString(),
-            createdAt: new Date().toLocaleString()
+            column
           }
           store.commit('createPost', newPost)
           router.push({ name: 'column', params: { id: column } }) // 命名路由创建成功后自动跳转到coulumnId（代表当前专栏作者）对应详情页
         }
+      }
+    }
+    const handleFileChange = (e: Event) => {
+      const target = e.target as HTMLInputElement // 从input选项中拿到所选的对象
+      const files = target.files
+      if (files) {
+        const uploadedFile = files[0]
+        const formData = new FormData()
+        formData.append(uploadedFile.name, uploadedFile)
+        axios.post('/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then((resp: any) => {
+          console.log(resp)
+        })
       }
     }
     return {
@@ -75,7 +91,8 @@ export default defineComponent({
       titleVal,
       contentVal,
       contentRules,
-      onFormSubmit
+      onFormSubmit,
+      handleFileChange
     }
   }
 })

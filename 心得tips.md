@@ -1800,3 +1800,107 @@ const vnode = <div id={dynamicId}>hello, {userName}</div>
 ```bash
 vue add babel
 ```
+
+# 第9章 道高一尺 - 上传组件
+
+## 9-1 上传组件需求分析
+
+**流程图**
+
+![流程图](http://docs.vikingship.xyz/assets/img/uploader.ab69693e.png)
+
+**组件设计**
+
+```html
+<uploader
+  action="https://upload-me"
+  beforeUpload=""
+  @uploading=""
+  @fileUploaded=""
+  @uploadedError=""
+>
+  <Button />
+  <template #uploaded>
+  </template>
+  <template #loading>
+  </template>
+</>
+```
+
+## 9-2 上传文件的两种实现方式
+
+- 一种是使用 传统的 form submission，表单提交的方式
+- 第二种是使用 Javascript 发送异步请求的方式
+
+**传统表单模式**
+
+```html
+<form method="post" encType="multipart/form-data" action="https://jsonplaceholder.typicode.com/posts">
+  <input type="file" />
+  <button type="submit">Submit</button>
+</form>  
+```
+
+关于 POST encType 的描述:https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Methods/POST
+
+- application/x-www-form-urlencoded: 数据被编码成以 '&' 分隔的键-值对, 同时以 '=' 分隔键和值. 非字母或数字的字符会被 percent-encoding: 这也就是为什么这种类型不支持二进制数据(应使用 multipart/form-data 代替).
+- multipart/form-data
+- text/plain
+
+**使用异步请求上传文件**
+
+```typescript
+// 示例代码
+  const handleFileChange = (e: Event) => {
+    // 在这个 input 组件中，我们可以拿到它选择的 file 对象
+      const target = e.target as HTMLInputElement
+      const files = target.files    
+      // 注意这个是一个 files 列表，也就是 fileList 对象，它是一个 array-like 的 object，但是不是一个数组，它支持选择多个文件，所以它可能有多个
+    if (files) {
+     // 我们拿到它的第一项，就是我们选择的文件
+      const uploadedFile = files[0]
+      // 然后让我们来模拟表单的数据我们可以使用 FormData 对象，这是另一种针对 XHR2 设计的新数据类型。使用 FormData 能够很方便地实时以 JavaScript 创建 HTML <form>。
+      // 文档 https://developer.mozilla.org/zh-CN/docs/Web/API/FormData
+      const formData = new FormData()
+      // 并通过调用 append 方法为其附加了 <input> 值。
+      // 就这样我们通过 FormData 对象添加了 input 的值
+      formData.append(uploadedFile.name, uploadedFile)
+      // 现在有了表单数据，我们可以发送 post 请求了，注意 axios post 的第二个参数，即支持普通的 object，也支持 formData。在这里我们需要添加一个额外的 header，就是Content-type，这个对应的表单的 encType，为了传文件，我们修改成 mutilpart
+      axios.post("/upload", formData , {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(resp => {
+        console.log(resp)
+      })
+    }
+  }
+```
+
+## 9-3 至 9-5 Uploader 组件编码
+
+代码提交地址 9-3:https://git.imooc.com/coding-449/zheye/commit/f49940cd79fcc4da5ba9c767f634584fbcedfdf3
+
+9-4:https://git.imooc.com/coding-449/zheye/commit/600456bb467ee7e182298129e4e40e920dad89a3
+
+9-5:https://git.imooc.com/coding-449/zheye/commit/c766b0010c8aa4bf5561b188b2374659e0f702d5
+
+vue 关于 scoped slot 的描述：https://vuejs.org/guide/components/slots.html#scoped-slots
+
+## 9-6 改进路由验证系统
+
+**流程图** ![流程图](http://docs.vikingship.xyz/assets/img/checkLogin.1b1ce987.png)
+
+代码提交:https://git.imooc.com/coding-449/zheye/commit/ce0f4b43fc6bf86406fc6e9c39e3b4de1acc0ec1
+
+## 9-7 创建文章页面实现 Uploader 自定义样式
+
+Object-fit 来限制图片的展示:https://developer.mozilla.org/zh-CN/docs/Web/CSS/object-fit
+
+代码提交：https://git.imooc.com/coding-449/zheye/commit/a225a631f9f1ed36e4a2fc2fbddcd0f46704deaa
+
+## 9-9 作业 完成文章详情页
+
+使用 Markdown-it 来完成从 markdown 到 HTML 转换：https://github.com/markdown-it/markdown-it
+
+代码提交详情：https://git.imooc.com/coding-449/zheye/commit/dc4b65fff5514e84ba89c2ef4ef1ec99e8fd271a
