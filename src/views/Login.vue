@@ -29,6 +29,7 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router' // 定义路由的一系列行为
 import ValidateInput, { RulesProp } from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
+import createMessage from '../components/createMessage'
 
 export default defineComponent({
   name: 'Login',
@@ -55,8 +56,10 @@ export default defineComponent({
           password: passwordVal.value
         }
         store.dispatch('loginAndFetch', payload).then(data => { // 将原来的登录请求更换为新的，包含登录+fetch两步
-          console.log(data)
-          router.push('/')
+          createMessage('登录成功 2秒后跳转首页', 'success') // 登录成功后弹出提示框，并跳转到首页
+          setTimeout(() => {
+            router.push('/')
+          }, 2000)
         }).catch(e => {
           console.log(e) // 捕捉登录失败时的信息
         })

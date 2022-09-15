@@ -3,7 +3,6 @@
     <!-- 在所有页面顶部渲染顶栏 -->
     <global-true-header :user="currentUser"></global-true-header>
     <loader v-if="isLoading"></loader>
-    <message type="error" :message="error.message" v-if="error.status"></message>
     <!-- 通过main.ts配置关联了Home、ColumnDetail、Login三个路由 -->
     <router-view></router-view>
     <footer class="text-center py-4 text-secondary bg-light mt-6">
@@ -21,20 +20,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, onMounted } from 'vue'
+import { defineComponent, computed, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import GlobalTrueHeader from './components/GlobalTrueHeader.vue'
 import Loader from './components/Loader.vue'
-import Message from './components/Message.vue'
+import createMessage from './components/createMessage'
 import { GlobalDataProps } from './store'
 export default defineComponent({
   name: 'App',
   components: {
     GlobalTrueHeader,
-    Loader,
-    Message
+    Loader
   },
   setup() {
     const store = useStore<GlobalDataProps>() // 为了获得更好的泛型自动补全支持
@@ -46,6 +44,12 @@ export default defineComponent({
       if (!currentUser.value.isLogin && token.value) {
         axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
         store.dispatch('fetchCurrentUser')
+      }
+    })
+    watch(() => error.value.status, () => {
+      const { status, message } = error.value
+      if (status && message) {
+        createMessage(message, 'error')
       }
     })
     return {
