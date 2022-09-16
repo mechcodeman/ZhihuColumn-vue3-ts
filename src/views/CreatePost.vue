@@ -1,7 +1,27 @@
 <template>
   <div class="create-post-page">
     <h4>新建文章</h4>
-    <input type="file" name="file" @change.prevent="handleFileChange" />
+    <uploader
+      action="/upload"
+      class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4"
+    >
+      <div class="d-flex">
+        <div class="spinner-border text-secondary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    <template #loading>
+      <div class="d-flex">
+        <div class="spinner-border text-secondary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <h2>正在上传</h2>
+      </div>
+    </template>
+    <template #uploaded="dataProps">
+      <img :src="dataProps.uploadedData.data.url" alt="">
+    </template>
+    </uploader>
     <validate-form @form-submit="onFormSubmit">
       <div class="mb-3">
         <label class="form-label">文章标题：</label>
@@ -38,12 +58,14 @@ import axios from 'axios'
 import { GlobalDataProps, PostProps } from '../store'
 import ValidateInput, { RulesProp } from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
+import Uploader from '@/components/Uploader.vue'
 
 export default defineComponent({
   name: 'Login',
   components: {
     ValidateInput,
-    ValidateForm
+    ValidateForm,
+    Uploader
   },
   setup() {
     const titleVal = ref('')
@@ -70,30 +92,25 @@ export default defineComponent({
         }
       }
     }
-    const handleFileChange = (e: Event) => {
-      const target = e.target as HTMLInputElement // 从input选项中拿到所选的对象
-      const files = target.files
-      if (files) {
-        const uploadedFile = files[0]
-        const formData = new FormData() // 通过创建FormData来传输数据
-        formData.append(uploadedFile.name, uploadedFile)
-        axios.post('/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }).then((resp: any) => {
-          console.log(resp)
-        })
-      }
-    }
     return {
       titleRules,
       titleVal,
       contentVal,
       contentRules,
-      onFormSubmit,
-      handleFileChange
+      onFormSubmit
     }
   }
 })
 </script>
+
+<style>
+.create-post-page .file-upload-container {
+  height: 200px;
+  cursor: pointer;
+}
+.create-post-page .file-upload-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+</style>
