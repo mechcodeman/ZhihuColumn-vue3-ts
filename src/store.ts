@@ -14,6 +14,7 @@ export interface UserProps { // 定义用户信息对象接口
   email?: string;
 }
 export interface ImageProps {
+  fitUrl?: string;
   _id?: string;
   url?: string;
   createdAt?: string;
@@ -28,8 +29,9 @@ export interface PostProps {
   title: string;
   excerpt?: string;
   content?: string;
-  image?: ImageProps;
+  image?: ImageProps | string;
   column: string;
+  author?: string;
 }
 export interface GlobalErrorProps {
   status: boolean;
@@ -115,6 +117,9 @@ const store = createStore<GlobalDataProps>({
     },
     login({ commit }, payload) {
       return postAndCommit('/user/login', 'login', commit, payload)
+    },
+    createPost({ commit }, payload) { // 创建文章异步请求
+      return postAndCommit('/posts', 'createPost', commit, payload)
     },
     loginAndFetch({ dispatch }, loginData) { // 组合式异步action请求，因为action返回的是一个promise，所以用then可以再组合一个异步请求action
       return dispatch('login', loginData).then(() => {
