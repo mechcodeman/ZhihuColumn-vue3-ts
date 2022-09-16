@@ -46,6 +46,7 @@ export interface GlobalDataProps { // 定义数据类型并导出为全局类型
 const getAndCommit = async (url: string, mutationName: string, commit: Commit) => {
   const { data } = await axios.get(url)
   commit(mutationName, data)
+  return data
 }
 const postAndCommit = async (url: string, mutationName: string, commit: Commit, payload: any) => { // payload就是需要传的data
   const { data } = await axios.post(url, payload)
@@ -101,16 +102,16 @@ const store = createStore<GlobalDataProps>({
   actions: {
     // 自定义函数实现重复性的请求功能
     fetchColumns({ commit }) {
-      getAndCommit('/columns', 'fetchColumns', commit)
+      return getAndCommit('/columns', 'fetchColumns', commit)
     },
     fetchColumn({ commit }, cid) {
-      getAndCommit(`/columns/${cid}`, 'fetchColumn', commit)
+      return getAndCommit(`/columns/${cid}`, 'fetchColumn', commit)
     },
     fetchPosts({ commit }, cid) {
-      getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
+      return getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
     },
     fetchCurrentUser({ commit }) { // 发送请求获取用户的信息（已设置好token响应头）
-      getAndCommit('/user/current', 'fetchCurrentUser', commit)
+      return getAndCommit('/user/current', 'fetchCurrentUser', commit)
     },
     login({ commit }, payload) {
       return postAndCommit('/user/login', 'login', commit, payload)

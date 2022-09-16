@@ -38,18 +38,7 @@ export default defineComponent({
     const store = useStore<GlobalDataProps>() // 为了获得更好的泛型自动补全支持
     const currentUser = computed(() => store.state.user)
     const isLoading = computed(() => store.state.loading)
-    const token = computed(() => store.state.token)
     const error = computed(() => store.state.error)
-    onMounted(() => {
-      const message = createMessage('checkhere', 'success')
-      setTimeout(() => {
-        message.destroy()
-      }, 2000)
-      if (!currentUser.value.isLogin && token.value) {
-        axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
-        store.dispatch('fetchCurrentUser')
-      }
-    })
     watch(() => error.value.status, () => {
       const { status, message } = error.value
       if (status && message) {
