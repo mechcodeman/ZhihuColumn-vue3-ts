@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import { createStore, Commit } from 'vuex'
 // eslint-disable-next-line @typescript-eslint/ban-types
 export interface ResponseType<P = Record<string, unknown>> {
@@ -49,13 +49,8 @@ export interface GlobalDataProps { // 定义数据类型并导出为全局类型
   posts: PostProps[];
   user: UserProps;
 }
-const getAndCommit = async (url: string, mutationName: string, commit: Commit) => {
-  const { data } = await axios.get(url)
-  commit(mutationName, data)
-  return data
-}
-const postAndCommit = async (url: string, mutationName: string, commit: Commit, payload: any) => { // payload就是需要传的data
-  const { data } = await axios.post(url, payload)
+const asyncAndCommit = async(url: string, mutationName: string, commit: Commit, config: AxiosRequestConfig = { method: 'get' }) => {
+  const { data } = await axios(url, config)
   commit(mutationName, data)
   return data // 此处返回的应该是一个Promise对象，因为async返回的就是Promise
 }
@@ -87,6 +82,15 @@ const store = createStore<GlobalDataProps>({
     fetchPost(state, rawData) {
       state.posts = [rawData.data]
     },
+    updatePost(state, { data }) {
+      state.posts = state.posts.map(post => {
+        if (post._id === data.id) {
+          return data
+        } else {
+          return post
+        }
+      })
+    },
     setLoading(state, status) {
       state.loading = status
     },
@@ -111,25 +115,31 @@ const store = createStore<GlobalDataProps>({
   actions: {
     // 自定义函数实现重复性的请求功能
     fetchColumns({ commit }) {
-      return getAndCommit('/columns', 'fetchColumns', commit)
+      return asyncAndCommit('/columns', 'fetchColumns', commit)
     },
     fetchColumn({ commit }, cid) {
-      return getAndCommit(`/columns/${cid}`, 'fetchColumn', commit)
+      return asyncAndCommit(`/columns/${cid}`, 'fetchColumn', commit)
     },
     fetchPosts({ commit }, cid) {
-      return getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
+      return asyncAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
     },
     fetchPost({ commit }, id) {
-      return getAndCommit(`/posts/${id}`, 'fetchPost', commit)
+      return asyncAndCommit(`/posts/${id}`, 'fetchPost', commit)
+    },
+    updatePost({ commit }, { id, payload }) {
+      return asyncAndCommit(`/posts/${id}`, 'updatePost', commit, {
+        method: 'patch',
+        data: payload
+      })
     },
     fetchCurrentUser({ commit }) { // 发送请求获取用户的信息（已设置好token响应头）
-      return getAndCommit('/user/current', 'fetchCurrentUser', commit)
+      return asyncAndCommit('/user/current', 'fetchCurrentUser', commit)
     },
     login({ commit }, payload) {
-      return postAndCommit('/user/login', 'login', commit, payload)
+      return asyncAndCommit('/user/login', 'login', commit, { method: 'post', data: payload })
     },
     createPost({ commit }, payload) { // 创建文章异步请求
-      return postAndCommit('/posts', 'createPost', commit, payload)
+      return asyncAndCommit('/posts', 'createPost', commit, { method: 'post', data: payload })
     },
     loginAndFetch({ dispatch }, loginData) { // 组合式异步action请求，因为action返回的是一个promise，所以用then可以再组合一个异步请求action
       return dispatch('login', loginData).then(() => {
