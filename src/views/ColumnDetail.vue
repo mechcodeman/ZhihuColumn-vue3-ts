@@ -29,7 +29,7 @@ export default defineComponent({
   setup() {
     const store = useStore<GlobalDataProps>()
     const route = useRoute()
-    const currentId = route.params.id // currentId已经是字符串类型数据
+    const currentId = route.params.id // currentId已经是字符串类型数据，目的在于动态存储当前用户的id信息
     onMounted(() => {
       store.dispatch('fetchColumn', currentId)
       store.dispatch('fetchPosts', currentId)

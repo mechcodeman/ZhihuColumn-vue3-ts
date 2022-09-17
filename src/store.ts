@@ -35,7 +35,7 @@ export interface PostProps {
   image?: ImageProps | string;
   createdAt?: string;
   column: string;
-  author?: string;
+  author?: string | UserProps;
 }
 export interface GlobalErrorProps {
   status: boolean;
@@ -82,7 +82,7 @@ const store = createStore<GlobalDataProps>({
       state.columns = [rawData.data]
     },
     fetchPosts(state, rawData) {
-      state.posts = [rawData.data]
+      state.posts = rawData.data.list
     },
     fetchPost(state, rawData) {
       state.posts = [rawData.data]
@@ -153,6 +153,7 @@ const store = createStore<GlobalDataProps>({
         },
     */
     getPostsByCid: (state) => (cid: string) => {
+      console.log(cid, state.posts, state.posts.filter(post => post.column === cid))
       return state.posts.filter(post => post.column === cid)
     },
     getCurrentPost: (state) => (id: string) => {
