@@ -6,18 +6,20 @@ export interface ResponseType<P = Record<string, unknown>> {
   msg: string;
   data: P;
 }
-export interface UserProps { // 定义用户信息对象接口
-  isLogin: boolean;
-  nickname?: string;
-  _id?: string;
-  column?: string;
-  email?: string;
-}
 export interface ImageProps {
   fitUrl?: string;
   _id?: string;
   url?: string;
   createdAt?: string;
+}
+export interface UserProps { // 定义用户信息对象接口
+  isLogin: boolean;
+  nickName?: string;
+  _id?: string;
+  column?: string;
+  email?: string;
+  avatar?: ImageProps;
+  description?: string;
 }
 export interface ColumnProps {
   _id: string;
@@ -26,10 +28,12 @@ export interface ColumnProps {
   description: string;
 }
 export interface PostProps {
+  _id?: string;
   title: string;
   excerpt?: string;
   content?: string;
   image?: ImageProps | string;
+  createdAt?: string;
   column: string;
   author?: string;
 }
@@ -78,7 +82,10 @@ const store = createStore<GlobalDataProps>({
       state.columns = [rawData.data]
     },
     fetchPosts(state, rawData) {
-      state.posts = rawData.data.list
+      state.posts = [rawData.data]
+    },
+    fetchPost(state, rawData) {
+      state.posts = [rawData.data]
     },
     setLoading(state, status) {
       state.loading = status
@@ -112,6 +119,9 @@ const store = createStore<GlobalDataProps>({
     fetchPosts({ commit }, cid) {
       return getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
     },
+    fetchPost({ commit }, id) {
+      return getAndCommit(`/posts/${id}`, 'fetchPost', commit)
+    },
     fetchCurrentUser({ commit }) { // 发送请求获取用户的信息（已设置好token响应头）
       return getAndCommit('/user/current', 'fetchCurrentUser', commit)
     },
@@ -144,6 +154,9 @@ const store = createStore<GlobalDataProps>({
     */
     getPostsByCid: (state) => (cid: string) => {
       return state.posts.filter(post => post.column === cid)
+    },
+    getCurrentPost: (state) => (id: string) => {
+      return state.posts.find(post => post._id === id)
     }
   }
 })

@@ -18,7 +18,7 @@
 <script lang="ts">
 import { defineComponent, PropType, computed } from 'vue'
 import { ColumnProps } from '../store'
-import { generateFitUrl } from '../helper'
+import { addColumnAvatar } from '../helper'
 
 export default defineComponent({
   name: 'ColumnList',
@@ -31,7 +31,7 @@ export default defineComponent({
   setup(props) {
     const columnList = computed(() => {
       return props.list.map(column => { // 根据动态路由来查找测试数据中对应的专栏作者信息并返回到子组件实例对象上进行渲染
-        generateFitUrl(column, 50, 50)
+        addColumnAvatar(column, 50, 50)
         return column
       })
     })

@@ -7,7 +7,7 @@
     </ul>
     <ul v-else class="list-inline mb-0">
       <li class="list-inline-item">
-        <drop-down :title="`你好 ${user.nickname}`">
+        <drop-down :title="`你好 ${user.nickName}`">
           <dropdown-item><router-link to="/create" class="dropdown-item">新建文章</router-link></dropdown-item>
           <dropdown-item disabled><a href="#" class="dropdown-item">编辑资料</a></dropdown-item>
           <dropdown-item><a href="#" @click="onLogout" class="dropdown-item">退出登录</a></dropdown-item>
