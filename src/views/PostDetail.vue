@@ -11,7 +11,13 @@
       </div>
       <div v-html="currentHTML"></div>
       <div v-if="showEditArea" class="btn-group mt-5">
-        <button type="button" class="btn btn-success">编辑</button>
+        <router-link
+        type="button"
+        class="btn btn-success"
+        :to="{name: 'create', query: { id: currentPost._id }}"
+        >
+          编辑
+        </router-link>
         <button type="button" class="btn btn-danger">删除</button>
       </div>
     </article>
@@ -40,12 +46,11 @@ export default defineComponent({
       store.dispatch('fetchPost', currentId)
     })
     const currentPost = computed<PostProps>(() => store.getters.getCurrentPost(currentId))
+    // eslint-disable-next-line vue/return-in-computed-property
     const currentHTML = computed(() => {
-      let mid = null
       if (currentPost.value && currentPost.value.content) {
-        mid = md.render(currentPost.value.content)
+        return md.render(currentPost.value.content)
       }
-      return mid
     })
     const showEditArea = computed(() => {
       const { isLogin, _id } = store.state.user
