@@ -82,6 +82,9 @@ const store = createStore<GlobalDataProps>({
     fetchPost(state, rawData) {
       state.posts = [rawData.data]
     },
+    deletePost(state, { data }) {
+      state.posts = state.posts.filter(post => post._id !== data._id)
+    },
     updatePost(state, { data }) {
       state.posts = state.posts.map(post => {
         if (post._id === data.id) {
@@ -108,6 +111,7 @@ const store = createStore<GlobalDataProps>({
     },
     logout(state) {
       state.token = ''
+      state.user = { isLogin: false }
       localStorage.removeItem('token')
       delete axios.defaults.headers.common.Authorization
     }
@@ -140,6 +144,9 @@ const store = createStore<GlobalDataProps>({
     },
     createPost({ commit }, payload) { // 创建文章异步请求
       return asyncAndCommit('/posts', 'createPost', commit, { method: 'post', data: payload })
+    },
+    deletePost({ commit }, id) { // 创建文章异步请求
+      return asyncAndCommit(`/posts/${id}`, 'deletePost', commit, { method: 'delete' })
     },
     loginAndFetch({ dispatch }, loginData) { // 组合式异步action请求，因为action返回的是一个promise，所以用then可以再组合一个异步请求action
       return dispatch('login', loginData).then(() => {
