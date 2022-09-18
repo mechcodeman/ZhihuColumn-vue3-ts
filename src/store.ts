@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { createStore, Commit } from 'vuex'
+import { arrToObj, objToArr } from './helper'
 // eslint-disable-next-line @typescript-eslint/ban-types
 export interface ResponseType<P = Record<string, unknown>> {
   code: number;
@@ -36,6 +37,10 @@ export interface PostProps {
   createdAt?: string;
   column: string;
   author?: string | UserProps;
+  isHTML?: boolean;
+}
+interface ListProps<P> {
+  [id: string]: P;
 }
 export interface GlobalErrorProps {
   status: boolean;
@@ -45,8 +50,8 @@ export interface GlobalDataProps { // 定义数据类型并导出为全局类型
   error: GlobalErrorProps;
   token: string;
   loading: boolean;
-  columns: ColumnProps[];
-  posts: PostProps[];
+  columns: ListProps<ColumnProps>;
+  posts: ListProps<PostProps>;
   user: UserProps;
 }
 const asyncAndCommit = async(url: string, mutationName: string, commit: Commit, config: AxiosRequestConfig = { method: 'get' }) => {
@@ -59,8 +64,8 @@ const store = createStore<GlobalDataProps>({
     error: { status: false },
     token: localStorage.getItem('token') || '',
     loading: false,
-    columns: [], // 置空等待后端传入数据,下同
-    posts: [],
+    columns: {}, // 置空等待后端传入数据,下同
+    posts: {},
     user: { isLogin: false }
   },
   mutations: {
@@ -68,31 +73,25 @@ const store = createStore<GlobalDataProps>({
       state.user = { isLogin: true, name: '低调的viking' }
     }, */
     createPost(state, newPost) {
-      state.posts.push(newPost)
+      state.posts[newPost._id] = newPost
     },
     fetchColumns(state, rawData) {
-      state.columns = rawData.data.list
+      state.columns = arrToObj(rawData.data.list)
     },
     fetchColumn(state, rawData) {
-      state.columns = [rawData.data]
+      state.columns[rawData.data._id] = rawData.data
     },
     fetchPosts(state, rawData) {
-      state.posts = rawData.data.list
+      state.posts = arrToObj(rawData.data.list)
     },
     fetchPost(state, rawData) {
-      state.posts = [rawData.data]
+      state.posts[rawData.data._id] = rawData.data
     },
     deletePost(state, { data }) {
-      state.posts = state.posts.filter(post => post._id !== data._id)
+      delete state.posts[data._id]
     },
     updatePost(state, { data }) {
-      state.posts = state.posts.map(post => {
-        if (post._id === data.id) {
-          return data
-        } else {
-          return post
-        }
-      })
+      state.posts[data._id] = data
     },
     setLoading(state, status) {
       state.loading = status
@@ -156,25 +155,16 @@ const store = createStore<GlobalDataProps>({
   },
   getters: { // 同计算属性一样，getter可以根据他的依赖值缓存起来，当依赖值发生改变时才会重新计算
     getColumnById: (state) => (id: string) => {
-      return state.columns.find(c => c._id === id)
+      return state.columns[id]
     },
-    // 这个 getter 的特殊之处在于要传参数进去, 对于这种 getter 我们需要返回一个对应的函数，其实就是假如有参数就要返回一个函数。然后调用的时候可以传入参数。对比以下两个程序段以理解
-    /*
-      // 不需要参数，直接返回结果
-        getColumns: (state) => {
-            return state.columns.data
-        },
-      // 需要参数，前面和上面是一样的，可以拿到 state
-        getColumnById: (state) => (id: string) => {
-            return ...
-        },
-    */
     getPostsByCid: (state) => (cid: string) => {
-      console.log(cid, state.posts, state.posts.filter(post => post.column === cid))
-      return state.posts.filter(post => post.column === cid)
+      return objToArr(state.posts).filter(post => post.column === cid)
     },
     getCurrentPost: (state) => (id: string) => {
-      return state.posts.find(post => post._id === id)
+      return state.posts[id]
+    },
+    getColumns: (state) => {
+      return objToArr(state.columns)
     }
   }
 })

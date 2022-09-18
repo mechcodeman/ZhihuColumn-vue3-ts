@@ -33,7 +33,7 @@ export default defineComponent({
     onMounted(() => {
       store.dispatch('fetchColumns')
     })
-    const list = computed(() => store.state.columns) // 利用computed属性方便地监听目标对象
+    const list = computed(() => store.getters.getColumns) // 利用computed属性方便地监听目标对象
     return {
       list
     }
