@@ -32,13 +32,15 @@
       </div>
       <div class="mb-3">
         <label class="form-label">文章详情：</label>
-        <validate-input
-          rows="10"
-          tag="textarea"
-          placeholder="请输入文章详情"
-          :rules="contentRules"
+        <editor
           v-model="contentVal"
-        />
+          :options="editorOptions"
+          @blur="checkEditor"
+          ref="editorRef"
+          :class="{'is-invalid': !editorStatus.isValid}"
+          >
+        </editor>
+        <span v-if="!editorStatus.isValid" class="invalid-feedback mt-1">{{editorStatus.message}}</span>
       </div>
       <template #submit>
         <button class="btn btn-primary btn-large">{{isEditMode ? '更新文章' : '发表文章'}}</button>
@@ -48,31 +50,46 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, onMounted, reactive } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
+import EasyMDE, { Options } from 'easymde'
 import { GlobalDataProps, PostProps, ResponseType, ImageProps } from '../store'
 import ValidateInput, { RulesProp } from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
 import Uploader from '@/components/Uploader.vue'
+import Editor from '../components/Editor.vue'
 import createMessage from '@/components/createMessage'
 import { beforeUploadCheck } from '../helper'
-
+interface EditorInstance {
+  clear: () => void;
+  getMDEInstance: () => EasyMDE | null;
+}
 export default defineComponent({
   name: 'Login',
   components: {
     ValidateInput,
     ValidateForm,
-    Uploader
+    Uploader,
+    Editor
   },
   setup() {
     const uploadedData = ref()
     const titleVal = ref('')
+    const editorStatus = reactive({
+      isValid: true,
+      message: ''
+    })
     const router = useRouter()
     const route = useRoute()
     const isEditMode = !!route.query.id // 用两个!转换成布尔类型，用于判断是否是编辑模式
     const store = useStore<GlobalDataProps>()
+    const textArea = ref<null | HTMLTextAreaElement>(null)
+    const editorRef = ref<null | EditorInstance>()
     let imageId = ''
+    const editorOptions: Options = {
+      spellChecker: false
+    }
     const titleRules: RulesProp = [
       { type: 'required', message: '文章标题不能为空' }
     ]
@@ -80,7 +97,19 @@ export default defineComponent({
     const contentRules: RulesProp = [
       { type: 'required', message: '文章详情不能为空' }
     ]
+    const checkEditor = () => {
+      if (contentVal.value.trim() === '') {
+        editorStatus.isValid = false
+        editorStatus.message = '文章详情不能为空'
+      } else {
+        editorStatus.isValid = true
+        editorStatus.message = ''
+      }
+    }
     onMounted(() => {
+      if (editorRef.value) {
+        console.log(editorRef.value.getMDEInstance())
+      }
       if (isEditMode) {
         store.dispatch('fetchPost', route.query.id).then((rawData: ResponseType<PostProps>) => {
           const currentPost = rawData.data
@@ -98,7 +127,8 @@ export default defineComponent({
       }
     }
     const onFormSubmit = (result: boolean) => {
-      if (result) {
+      checkEditor()
+      if (result && editorStatus.isValid) {
         const { column, _id } = store.state.user
         if (column) { // typeguard，columnId定义时可能为undefinded导致下面的columnId类型判断报错
           const newPost: PostProps = {
@@ -146,7 +176,12 @@ export default defineComponent({
       uploadCheck,
       handleFileUploaded,
       uploadedData,
-      isEditMode
+      isEditMode,
+      textArea,
+      editorOptions,
+      editorRef,
+      checkEditor,
+      editorStatus
     }
   }
 })

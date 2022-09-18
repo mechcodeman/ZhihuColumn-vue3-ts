@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 
 import App from './App.vue'
+import 'easymde/dist/easymde.min.css'
 axios.defaults.baseURL = 'http://apis.imooc.com/api/'
 axios.interceptors.request.use(config => { // 在全局设置使用interceptor来拦截当前应用的请求并加入逻辑实现需求的方法
   config.params = { ...config.params, icode: '17E8D97C11A405CD' }
