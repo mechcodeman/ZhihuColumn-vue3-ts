@@ -55,8 +55,8 @@ export default defineComponent({
           email: emailVal.value,
           password: passwordVal.value
         }
-        store.dispatch('loginAndFetch', payload).then(() => { // 将原来的登录请求更换为新的，包含登录+fetch两步
-          createMessage('登录成功 2秒后跳转首页', 'success') // 登录成功后弹出提示框，并跳转到首页
+        store.dispatch('loginAndFetch', payload).then(data => { // 将原来的登录请求更换为新的，包含登录+fetch两步
+          createMessage('登录成功 2秒后跳转首页', 'success', 2000) // 登录成功后弹出提示框，并跳转到首页
           setTimeout(() => {
             router.push('/')
           }, 2000)

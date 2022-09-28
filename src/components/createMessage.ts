@@ -19,9 +19,6 @@ const createMessage = (message: string, type: MessageType, timeout?: number) => 
       destroy()
     }, timeout)
   }
-  return {
-    destroy
-  }
 }
 
 export default createMessage
